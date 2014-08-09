@@ -21,12 +21,17 @@ class PromiseTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
+    func testPromiseCallResolveAsSyncAndCallThenSync() {
         var expectation = expectationWithDescription("Promise Test")
         
         var testResult = ""
         
-        var promise = doReturnString()
+        var promise = Promise<String>(
+            {
+                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                    resolve(result: "42")
+            }
+        )
         promise.then(
             {
                 (result: String) -> Void in
@@ -40,14 +45,59 @@ class PromiseTests: XCTestCase {
                 XCTAssertEqual("42", testResult, "")
         })
     }
-
-    func doReturnString() -> Promise<String> {
-        return Promise<String>(
+    
+    func testPromiseCallResolveAsSyncAndCallThenAsync() {
+        var expectation = expectationWithDescription("Promise Test")
+        
+        var testResult = ""
+        
+        var promise = Promise<String>(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                    resolve(result: "42")
+                resolve(result: "42")
             }
         )
+        
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5), dispatch_get_main_queue(), {
+            promise.then(
+                {
+                    (result: String) -> Void in
+                    testResult = result
+                    expectation.fulfill()
+                }
+            )
+        })
+        
+        waitForExpectationsWithTimeout(10, handler: {
+            (error: NSError!) -> Void in
+            XCTAssertEqual("42", testResult, "")
+        })
     }
-    
+
+    func testPromiseCallResolveAsAsync() {
+        var expectation = expectationWithDescription("Promise Test")
+        
+        var testResult = ""
+        
+        var promise = Promise<String>(
+            {
+                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5), dispatch_get_main_queue(), {
+                    resolve(result: "42")
+                })
+            }
+        )
+        promise.then(
+            {
+                (result: String) -> Void in
+                testResult = result
+                expectation.fulfill()
+            }
+        )
+        
+        waitForExpectationsWithTimeout(10, handler: {
+            (error: NSError!) -> Void in
+            XCTAssertEqual("42", testResult, "")
+        })
+    }
 }

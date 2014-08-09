@@ -8,20 +8,28 @@
 
 import Foundation
 
+enum State {
+        case Pending
+        case Fulfilled
+        case Rejected
+    }
+
 class Promise<T> {
+    var state: State = .Pending
     var deferred: ((T) -> Void)?
+    var value: (T)?
     
     init (asyncFunc: (resolve: (T) -> Void, reject: (NSError) -> Void) -> Void) {
         asyncFunc(onResolve, onRejected)
     }
     
     func onResolve (result: T) -> Void {
-        dispatch_async(
-            dispatch_get_main_queue(),
-            {
-                self.deferred!(result)
-            }
-        )
+        value = result
+        state = .Fulfilled
+        
+        if let deferred = self.deferred {
+            handle(deferred)
+        }
     }
     
     func onRejected (reason: NSError) -> Void {
@@ -29,10 +37,21 @@ class Promise<T> {
     }
     
     func then (resolve: (T) -> Void) {
-        deferred = resolve
+        handle(resolve)
     }
     
     func catch (reason: (NSError) -> Void) {
         
+    }
+    
+    func handle (resolve: (T) -> Void) {
+        if state == .Pending {
+            deferred = resolve
+            return
+        } else {
+            if let value = self.value {
+                resolve(value)
+            }
+        }
     }
 }
