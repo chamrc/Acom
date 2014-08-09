@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		9D79462B1995ADBA0076C422 /* Acom.h in Headers */ = {isa = PBXBuildFile; fileRef = 9D79462A1995ADBA0076C422 /* Acom.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		9D7946351995ADBA0076C422 /* AcomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7946341995ADBA0076C422 /* AcomTests.swift */; };
+		9D79463F1995ADE60076C422 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79463E1995ADE60076C422 /* Promise.swift */; };
+		9D7946401995ADE60076C422 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79463E1995ADE60076C422 /* Promise.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -18,6 +20,7 @@
 		9D7946301995ADBA0076C422 /* AcomTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AcomTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9D7946331995ADBA0076C422 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D7946341995ADBA0076C422 /* AcomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcomTests.swift; sourceTree = "<group>"; };
+		9D79463E1995ADE60076C422 /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -61,6 +64,7 @@
 			children = (
 				9D79462A1995ADBA0076C422 /* Acom.h */,
 				9D7946281995ADBA0076C422 /* Supporting Files */,
+				9D79463E1995ADE60076C422 /* Promise.swift */,
 			);
 			path = Acom;
 			sourceTree = "<group>";
@@ -196,6 +200,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9D79463F1995ADE60076C422 /* Promise.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -204,6 +209,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				9D7946351995ADBA0076C422 /* AcomTests.swift in Sources */,
+				9D7946401995ADE60076C422 /* Promise.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -298,6 +304,7 @@
 		9D7946391995ADBA0076C422 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
@@ -307,12 +314,14 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 			};
 			name = Debug;
 		};
 		9D79463A1995ADBA0076C422 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_ENABLE_MODULES = YES;
 				DEFINES_MODULE = YES;
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
