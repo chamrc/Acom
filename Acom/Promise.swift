@@ -16,8 +16,8 @@ enum State {
 
 class Promise<T> {
     var state: State = .Pending
-    var deferred: ((T) -> Void)?
     var value: (T)?
+    var fc: (() -> ())?
     
     init (asyncFunc: (resolve: (T) -> Void, reject: (NSError) -> Void) -> Void) {
         asyncFunc(onResolve, onRejected)
@@ -26,9 +26,9 @@ class Promise<T> {
     func onResolve (result: T) -> Void {
         value = result
         state = .Fulfilled
-        
-        if let deferred = self.deferred {
-            handle(deferred)
+
+        if let fc = self.fc {
+            fc()
         }
     }
     
@@ -36,22 +36,27 @@ class Promise<T> {
         
     }
     
-    func then (resolve: (T) -> Void) {
-        handle(resolve)
+    func then<U> (resolved: (T) -> U) -> Promise<U> {
+        return Promise<U>(asyncFunc: { (resolve, reject) -> Void in
+            var retval: (U)?
+            if self.state == .Fulfilled {
+                if let value = self.value {
+                    retval = resolved(value)
+                    resolve(retval!)
+                }
+            } else {
+                self.fc = {
+                    if let value = self.value {
+                        retval = resolved(value)
+                        resolve(retval!)
+                    }
+                }
+            }
+        })
     }
     
     func catch (reason: (NSError) -> Void) {
         
     }
     
-    func handle (resolve: (T) -> Void) {
-        if state == .Pending {
-            deferred = resolve
-            return
-        } else {
-            if let value = self.value {
-                resolve(value)
-            }
-        }
-    }
 }
