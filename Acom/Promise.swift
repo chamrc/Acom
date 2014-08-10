@@ -8,55 +8,79 @@
 
 import Foundation
 
+// TODO : define into class. can't define now because of compiler bug..
 enum State {
         case Pending
         case Fulfilled
         case Rejected
     }
 
-class Promise<T> {
-    var state: State = .Pending
-    var value: (T)?
-    var fc: (() -> ())?
+public class Promise<T> {
+    typealias OnResolved = (T) -> Void
+    typealias OnRejected = (NSError) -> Void
     
-    init (asyncFunc: (resolve: (T) -> Void, reject: (NSError) -> Void) -> Void) {
+    private var state: State = .Pending
+    private var value: (T)?
+    private var reason: (NSError)?
+    private var handler: (() -> ())?
+    
+    init (_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
         asyncFunc(onResolve, onRejected)
     }
     
-    func onResolve (result: T) -> Void {
+    private func onResolve (result: T) -> Void {
         value = result
         state = .Fulfilled
 
-        if let fc = self.fc {
-            fc()
+        handle()
+    }
+    
+    private func onRejected (reason: NSError) -> Void {
+        self.reason = reason
+        state = .Rejected
+        
+        handle()
+    }
+    
+    private func handle() {
+        if let handler = self.handler {
+            dispatch_async(dispatch_get_main_queue(), { handler() })
         }
     }
     
-    func onRejected (reason: NSError) -> Void {
-        
-    }
-    
     func then<U> (resolved: (T) -> U) -> Promise<U> {
-        return Promise<U>(asyncFunc: { (resolve, reject) -> Void in
-            var retval: (U)?
+        return Promise<U>( { (resolve, reject) -> Void in
+            var returnVal: (U)?
             if self.state == .Fulfilled {
                 if let value = self.value {
-                    retval = resolved(value)
-                    resolve(retval!)
+                    returnVal = resolved(value)
+                    resolve(returnVal!)
                 }
             } else {
-                self.fc = {
+                self.handler = {
                     if let value = self.value {
-                        retval = resolved(value)
-                        resolve(retval!)
+                        returnVal = resolved(value)
+                        resolve(returnVal!)
                     }
                 }
             }
         })
     }
     
-    func catch (reason: (NSError) -> Void) {
-        
+    func catch (rejected: (NSError) -> Void) -> Promise<T> {
+        return Promise<T>( { (resolve, reject) -> Void in
+            if self.state == .Rejected {
+                if let reason = self.reason {
+                    rejected(reason)
+                }
+            } else {
+                self.handler = {
+                    if let reason = self.reason {
+                        rejected(reason)
+                    }
+                }
+            }
+        })
     }
     
 }
