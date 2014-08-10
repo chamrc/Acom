@@ -22,6 +22,7 @@ public class Promise<T> {
     private var state: State = .Pending
     private var value: (T)?
     private var reason: (NSError)?
+    // TODO: multiple handler
     private var handler: (() -> ())?
     
     init (_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
@@ -29,17 +30,21 @@ public class Promise<T> {
     }
     
     private func onResolve (result: T) -> Void {
-        value = result
-        state = .Fulfilled
+        if self.state == .Pending {
+            value = result
+            state = .Fulfilled
 
-        handle()
+            handle()
+        }
     }
     
     private func onRejected (reason: NSError) -> Void {
-        self.reason = reason
-        state = .Rejected
+        if self.state == .Pending {
+            self.reason = reason
+            state = .Rejected
         
-        handle()
+            handle()
+        }
     }
     
     private func handle() {
@@ -51,12 +56,15 @@ public class Promise<T> {
     func then<U> (resolved: (T) -> U) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
-            if self.state == .Fulfilled {
+            switch self.state {
+            case .Fulfilled:
                 if let value = self.value {
                     returnVal = resolved(value)
                     resolve(returnVal!)
                 }
-            } else {
+            case .Rejected:
+                reject(NSError(domain: "", code: 404, userInfo: nil))
+            case .Pending:
                 self.handler = {
                     if let value = self.value {
                         returnVal = resolved(value)
@@ -67,13 +75,20 @@ public class Promise<T> {
         })
     }
     
+    // TODO : func then<U> (resolved: (T) -> U, rejected: (NSError) -> Void) -> Promise<U>
+    
     func catch (rejected: (NSError) -> Void) -> Promise<T> {
         return Promise<T>( { (resolve, reject) -> Void in
-            if self.state == .Rejected {
+            switch self.state {
+            case .Rejected:
                 if let reason = self.reason {
                     rejected(reason)
                 }
-            } else {
+            case .Fulfilled:
+                if let value = self.value {
+                    resolve(value)
+                }
+            case .Pending:
                 self.handler = {
                     if let reason = self.reason {
                         rejected(reason)
