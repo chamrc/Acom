@@ -207,5 +207,45 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(testReason!, expectError, "")
         })
     }
+    
+    // Promise.resolve
+    func testPromiseCallResolve() {
+        var expectation = expectationWithDescription("Promise Test")
+        
+        var testResult = ""
+        
+        Promise.resolve("42").then(
+            {
+                (result: String) -> Void in
+                testResult = result
+                expectation.fulfill()
+            }
+        )
+        
+        waitForExpectationsWithTimeout(10, handler: {
+            (error: NSError!) -> Void in
+            XCTAssertEqual("42", testResult, "")
+        })
+    }
+
+    // Promise.reject
+    func testPromiseCallReject() {
+        var expectation = expectationWithDescription("Promise Test")
+        
+        var testReason: NSError? = nil
+        
+        var error = NSError(domain: "test", code: 404, userInfo: nil)
+        Promise<NSError>.reject(error).catch({
+            (reason: NSError) -> Void in
+            testReason = reason
+            expectation.fulfill()
+        })
+        
+        waitForExpectationsWithTimeout(10, handler: {
+            (error: NSError!) -> Void in
+            var expectError = NSError(domain: "test", code: 404, userInfo: nil)
+            XCTAssertEqual(testReason!, expectError, "")
+        })
+    }
 
 }

@@ -29,6 +29,24 @@ public class Promise<T> {
         asyncFunc(onResolve, onRejected)
     }
     
+    class func resolve (result: T) -> Promise<T> {
+        return Promise<T>(
+            {
+                (resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                    resolve(result: result)
+            }
+        )
+    }
+    
+    class func reject (reason: NSError) -> Promise<T> {
+        return Promise<T>(
+            {
+                (resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                    reject(reason: reason)
+            }
+        )
+    }
+    
     private func onResolve (result: T) -> Void {
         if self.state == .Pending {
             value = result
