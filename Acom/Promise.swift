@@ -8,7 +8,7 @@
 
 import Foundation
 
-// TODO : define into class. can't define now because of compiler bug..
+// FIXME : define into class. can't define now because of compiler bug..
 enum State {
         case Pending
         case Fulfilled
@@ -19,6 +19,7 @@ public class Promise<T> {
     typealias OnResolved = (T) -> Void
     typealias OnRejected = (NSError?) -> Void
     
+    // TODO: private
     var state: State = .Pending
     var value: (T)?
     var reason: (NSError)?
@@ -27,10 +28,12 @@ public class Promise<T> {
     var rejectHandler: (() -> ())?
     var thenPromise: Promise?
     
+    // MARK: - Initialize
     init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
         asyncFunc(onResolve, onRejected)
     }
     
+    // MARK: - Public Class Interface
     class func resolve(result: T) -> Promise<T> {
         return Promise<T>(
             {
@@ -40,15 +43,19 @@ public class Promise<T> {
         )
     }
     
-    class func reject(reason: NSError) -> Promise<AnyObject> {
-        return Promise<AnyObject>(
+    class func reject(reason: NSError) -> Promise<T> {
+        return Promise<T>(
             {
-                (resolve: (result: AnyObject) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                (resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: reason)
             }
         )
     }
     
+    // TODO: class func all()
+    // TODO: class func race()
+    
+    // MARK: - Private Methods
     private func onResolve(result: T) -> Void {
         if self.state == .Pending {
             value = result
@@ -79,6 +86,7 @@ public class Promise<T> {
         }
     }
 
+    // MARK: - Pubic Interface
     func then<U>(resolved: ((T) -> U)?, rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
@@ -86,7 +94,7 @@ public class Promise<T> {
             switch self.state {
             case .Fulfilled:
                 if let value = self.value {
-                    // TODO: try-catch (Swift has no feature...)
+                    // FIXME: do try-catch (Swift has no feature...)
                     returnVal = resolved?(value)
                     resolve(returnVal!)
                 }
