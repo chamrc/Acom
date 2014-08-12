@@ -15,22 +15,24 @@ enum State {
         case Rejected
     }
 
-public class Promise<T,F> {
+public class Promise<T> {
     typealias OnResolved = (T) -> Void
-    typealias OnRejected = (F) -> Void
+    typealias OnRejected = (NSError) -> Void
     
-    private var state: State = .Pending
-    private var value: (T)?
-    private var reason: (F)?
+    var state: State = .Pending
+    var value: (T)?
+    var reason: (NSError)?
     // TODO: multiple handler
-    private var handler: (() -> ())?
+    var resolveHandler: (() -> ())?
+    var rejectHandler: (() -> ())?
+    var thenPromise: Promise?
     
     init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
         asyncFunc(onResolve, onRejected)
     }
-
-    class func resolve(result: T) -> Promise<T,NSError> {
-        return Promise<T,NSError>(
+    
+    class func resolve(result: T) -> Promise<T> {
+        return Promise<T>(
             {
                 (resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: result)
@@ -38,11 +40,11 @@ public class Promise<T,F> {
         )
     }
     
-    class func reject(reason: F) -> Promise<AnyObject,F> {
-        return Promise<AnyObject,F>(
+    class func reject(reason: NSError) -> Promise<AnyObject> {
+        return Promise<AnyObject>(
             {
-                (resolve: (result: AnyObject) -> Void, reject: (reason: F) -> Void) -> Void in
-                    reject(reason: reason)
+                (resolve: (result: AnyObject) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: reason)
             }
         )
     }
@@ -51,69 +53,67 @@ public class Promise<T,F> {
         if self.state == .Pending {
             value = result
             state = .Fulfilled
-
-            handle()
+            
+            resolveHandle()
         }
     }
     
-    private func onRejected(reason: F) -> Void {
+    private func onRejected(reason: NSError) -> Void {
         if self.state == .Pending {
             self.reason = reason
             state = .Rejected
-        
-            handle()
+            
+            rejectHandle()
         }
     }
     
-    private func handle() {
-        if let handler = self.handler {
+    private func resolveHandle() {
+        if let handler = self.resolveHandler {
             dispatch_async(dispatch_get_main_queue(), { handler() })
         }
     }
     
-    func then<U>(resolved: (T) -> U) -> Promise<U,NSError> {
-        return Promise<U,NSError>( { (resolve, reject) -> Void in
+    private func rejectHandle() {
+        if let handler = self.rejectHandler {
+            dispatch_async(dispatch_get_main_queue(), { handler() })
+        }
+    }
+
+    func then<U>(resolved: ((T) -> U)?, rejected: (NSError) -> NSError) -> Promise<U> {
+        var thenPromise = Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
+            var returnReason: (NSError)?
             switch self.state {
             case .Fulfilled:
                 if let value = self.value {
-                    returnVal = resolved(value)
+                    // TODO: try-catch (Swift has no feature...)
+                    returnVal = resolved?(value)
                     resolve(returnVal!)
                 }
             case .Rejected:
-                reject(NSError(domain: "", code: 404, userInfo: nil))
+                if let reason = self.reason {
+                    returnReason = rejected(reason)
+                    reject(returnReason!)
+                }
             case .Pending:
-                self.handler = {
+                self.resolveHandler = {
                     if let value = self.value {
-                        returnVal = resolved(value)
+                        returnVal = resolved?(value)
                         resolve(returnVal!)
                     }
                 }
-            }
-        })
-    }
-    
-    // TODO : func then<U> (resolved: (T) -> U, rejected: (NSError) -> Void) -> Promise<U>
-    
-    func catch(rejected: (F) -> Void) -> Promise<T,F> {
-        return Promise<T,F>( { (resolve, reject) -> Void in
-            switch self.state {
-            case .Rejected:
-                if let reason = self.reason {
-                    rejected(reason)
-                }
-            case .Fulfilled:
-                if let value = self.value {
-                    resolve(value)
-                }
-            case .Pending:
-                self.handler = {
+                self.rejectHandler = {
                     if let reason = self.reason {
-                        rejected(reason)
+                        returnReason = rejected(reason)
+                        reject(returnReason!)
                     }
                 }
             }
         })
+        return thenPromise
     }
     
+    func catch<U>(rejected: (NSError) -> NSError) -> Promise<U> {
+        return then(nil, rejected: rejected)
+    }
 }
