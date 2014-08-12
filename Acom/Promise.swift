@@ -17,7 +17,7 @@ enum State {
 
 public class Promise<T> {
     typealias OnResolved = (T) -> Void
-    typealias OnRejected = (NSError) -> Void
+    typealias OnRejected = (NSError?) -> Void
     
     var state: State = .Pending
     var value: (T)?
@@ -58,7 +58,7 @@ public class Promise<T> {
         }
     }
     
-    private func onRejected(reason: NSError) -> Void {
+    private func onRejected(reason: NSError?) -> Void {
         if self.state == .Pending {
             self.reason = reason
             state = .Rejected
@@ -80,7 +80,7 @@ public class Promise<T> {
     }
 
     func then<U>(resolved: ((T) -> U)?, rejected: ((NSError) -> NSError)?) -> Promise<U> {
-        var thenPromise = Promise<U>( { (resolve, reject) -> Void in
+        return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
             var returnReason: (NSError)?
             switch self.state {
@@ -93,7 +93,11 @@ public class Promise<T> {
             case .Rejected:
                 if let reason = self.reason {
                     returnReason = rejected?(reason)
-                    reject(returnReason!)
+                    if let returnReason = returnReason {
+                        reject(returnReason)
+                    } else {
+                        reject(reason)
+                    }
                 }
             case .Pending:
                 self.resolveHandler = {
@@ -105,12 +109,15 @@ public class Promise<T> {
                 self.rejectHandler = {
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
-                        reject(returnReason!)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
                     }
                 }
             }
         })
-        return thenPromise
     }
     
     func then<U>(resolved: ((T) -> U)) -> Promise<U> {
@@ -126,13 +133,17 @@ public class Promise<T> {
             case .Rejected:
                 if let reason = self.reason {
                     returnReason = rejected(reason)
-                    reject(returnReason!)
+                    reject(returnReason)
                 }
             case .Pending:
                 self.rejectHandler = {
                     if let reason = self.reason {
                         returnReason = rejected(reason)
-                        reject(returnReason!)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
                     }
                 }
             }

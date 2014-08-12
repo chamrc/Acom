@@ -201,7 +201,7 @@ class PromiseTests: XCTestCase {
         })
     }
     
-    func testPromiseCallResolveAsSyncAndCallThenCatchChain() {
+    func testPromiseCallResolveAsSyncAndCallCatch() {
         var expectation = expectationWithDescription("Promise Test")
         
         var testResult: NSError?
@@ -230,7 +230,7 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
-    /*
+
     func testPromiseCallResolveAsSyncAndCallThenCatchChain() {
         var expectation = expectationWithDescription("Promise Test")
         
@@ -252,6 +252,7 @@ class PromiseTests: XCTestCase {
             {
                 (reason: NSError) -> NSError in
                 testResult = reason
+                expectation.fulfill()
                 return testResult!
             }
         )
@@ -260,11 +261,10 @@ class PromiseTests: XCTestCase {
             (error: NSError!) -> Void in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertNotEqual("HelloWorld", promise2.value!, "")
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
             XCTAssertEqual(State.Rejected, promise.state, "")
             XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
-    */
+
 }
