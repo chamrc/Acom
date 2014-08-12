@@ -201,4 +201,70 @@ class PromiseTests: XCTestCase {
         })
     }
     
+    func testPromiseCallResolveAsSyncAndCallThenCatchChain() {
+        var expectation = expectationWithDescription("Promise Test")
+        
+        var testResult: NSError?
+        
+        var promise = Promise(
+            {
+                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            }
+        )
+        var promise2 = promise.catch(
+            {
+                (reason: NSError) -> NSError in
+                testResult = reason
+                expectation.fulfill()
+                return testResult!
+            }
+        )
+        
+        waitForExpectationsWithTimeout(10, handler: {
+            (error: NSError!) -> Void in
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            // Debug
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
+            XCTAssertEqual(State.Rejected, promise.state, "")
+            XCTAssertEqual(State.Rejected, promise2.state, "")
+        })
+    }
+    /*
+    func testPromiseCallResolveAsSyncAndCallThenCatchChain() {
+        var expectation = expectationWithDescription("Promise Test")
+        
+        var testResult: NSError?
+        
+        var promise = Promise(
+            {
+                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            }
+        )
+        var promise2 = promise.then(
+            {
+                (result: String) -> String in
+                return result + "World"
+            }
+        )
+        var promise3 = promise2.catch(
+            {
+                (reason: NSError) -> NSError in
+                testResult = reason
+                return testResult!
+            }
+        )
+        
+        waitForExpectationsWithTimeout(10, handler: {
+            (error: NSError!) -> Void in
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            // Debug
+            XCTAssertEqual("Hello", promise.value!, "")
+            XCTAssertNotEqual("HelloWorld", promise2.value!, "")
+            XCTAssertEqual(State.Rejected, promise.state, "")
+            XCTAssertEqual(State.Rejected, promise2.state, "")
+        })
+    }
+    */
 }

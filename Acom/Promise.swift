@@ -79,7 +79,7 @@ public class Promise<T> {
         }
     }
 
-    func then<U>(resolved: ((T) -> U)?, rejected: (NSError) -> NSError) -> Promise<U> {
+    func then<U>(resolved: ((T) -> U)?, rejected: ((NSError) -> NSError)?) -> Promise<U> {
         var thenPromise = Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
             var returnReason: (NSError)?
@@ -92,7 +92,7 @@ public class Promise<T> {
                 }
             case .Rejected:
                 if let reason = self.reason {
-                    returnReason = rejected(reason)
+                    returnReason = rejected?(reason)
                     reject(returnReason!)
                 }
             case .Pending:
@@ -104,7 +104,7 @@ public class Promise<T> {
                 }
                 self.rejectHandler = {
                     if let reason = self.reason {
-                        returnReason = rejected(reason)
+                        returnReason = rejected?(reason)
                         reject(returnReason!)
                     }
                 }
@@ -113,7 +113,29 @@ public class Promise<T> {
         return thenPromise
     }
     
-    func catch<U>(rejected: (NSError) -> NSError) -> Promise<U> {
-        return then(nil, rejected: rejected)
+    func then<U>(resolved: ((T) -> U)) -> Promise<U> {
+        return then(resolved, nil)
+    }
+
+    func catch(rejected: (NSError) -> NSError) -> Promise<NSError> {
+        return Promise<NSError>( { (resolve, reject) -> Void in
+            var returnReason: (NSError)?
+            switch self.state {
+            case .Fulfilled:
+                break
+            case .Rejected:
+                if let reason = self.reason {
+                    returnReason = rejected(reason)
+                    reject(returnReason!)
+                }
+            case .Pending:
+                self.rejectHandler = {
+                    if let reason = self.reason {
+                        returnReason = rejected(reason)
+                        reject(returnReason!)
+                    }
+                }
+            }
+        })
     }
 }
