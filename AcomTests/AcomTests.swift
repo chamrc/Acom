@@ -10,7 +10,7 @@ import UIKit
 import XCTest
 
 class PromiseTests: XCTestCase {
-    
+
     // MARK: - Setups
     override func setUp() {
         super.setUp()
@@ -21,10 +21,10 @@ class PromiseTests: XCTestCase {
 
         super.tearDown()
     }
-    
+
     // MARK: - then(,)
     func testThenWithTwoArguments_resolve_sync() {
-        var expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("Promise Test")
 
         var testResult = ""
 
@@ -45,7 +45,7 @@ class PromiseTests: XCTestCase {
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
@@ -54,10 +54,10 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
-    
+
     func testThenWithTwoArguments_reject_sync() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult: NSError?
         var promise = Promise(
             {
@@ -76,7 +76,7 @@ class PromiseTests: XCTestCase {
                     return testResult!
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             
@@ -86,12 +86,12 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
-    
+
     func testThenWithTwoArguments_resolve_async() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult = ""
-        
+
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
@@ -120,9 +120,9 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
-    
+
     func testThenWithTwoArguments_reject_async() {
-        var expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("Promise Test")
         
         var testResult: NSError?
         var promise = Promise(
@@ -144,22 +144,22 @@ class PromiseTests: XCTestCase {
                 return testResult!
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-            
+
             // Debug
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
             XCTAssertEqual(State.Rejected, promise.state, "")
             XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
-    
+
     func testThenWithTwoArguments_resolve_sync_chain() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult = ""
-        
+
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
@@ -187,7 +187,7 @@ class PromiseTests: XCTestCase {
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("HelloWorld!!", testResult, "")
             // Debug
@@ -197,13 +197,13 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
-    
+
     // MARK: - then()
     func testThen_resolve_sync() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult = ""
-        
+
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
@@ -217,7 +217,7 @@ class PromiseTests: XCTestCase {
                 expectation.fulfill()
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
@@ -226,12 +226,12 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
-    
+
     func testThen_resolve_sync_chain() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult = ""
-        
+
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
@@ -252,7 +252,7 @@ class PromiseTests: XCTestCase {
                 expectation.fulfill()
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("HelloWorld!!", testResult, "")
             // Debug
@@ -262,13 +262,13 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Fulfilled, promise3.state, "")
         })
     }
-    
+
     // MARK: - catch()
     func testCatch_reject_sync() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult: NSError?
-        
+
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
@@ -283,7 +283,7 @@ class PromiseTests: XCTestCase {
                 return testResult!
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             // Debug
@@ -294,10 +294,10 @@ class PromiseTests: XCTestCase {
     }
 
     func testCatch_reject_sync_chain() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult: NSError?
-        
+
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
@@ -318,7 +318,7 @@ class PromiseTests: XCTestCase {
                 return testResult!
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             // Debug
@@ -327,13 +327,13 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
-    
+
     // MARK: - Promise.resolve()
     func testThenWithTwoArguments_static_resolve() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult = ""
-        
+
         var promise = Promise.resolve("Hello")
         var promise2 = promise.then(
             {
@@ -346,7 +346,7 @@ class PromiseTests: XCTestCase {
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
@@ -355,11 +355,11 @@ class PromiseTests: XCTestCase {
             XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
-    
+
     // MARK: - Promise.reject()
     func testThenWithTwoArguments_static_reject() {
-        var expectation = expectationWithDescription("Promise Test")
-        
+        let expectation = expectationWithDescription("Promise Test")
+
         var testResult: NSError?
         var error = NSError(domain: "test", code: 1, userInfo: nil)
         var promise = Promise<NSError>.reject(error)
@@ -371,10 +371,10 @@ class PromiseTests: XCTestCase {
                 return testResult!
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-            
+
             // Debug
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
             XCTAssertEqual(State.Rejected, promise.state, "")

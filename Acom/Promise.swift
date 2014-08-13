@@ -18,7 +18,7 @@ enum State {
 public class Promise<T> {
     typealias OnResolved = (T) -> Void
     typealias OnRejected = (NSError?) -> Void
-    
+
     // TODO: private
     var state: State = .Pending
     var value: (T)?
@@ -27,12 +27,12 @@ public class Promise<T> {
     var resolveHandler: (() -> ())?
     var rejectHandler: (() -> ())?
     var thenPromise: Promise?
-    
+
     // MARK: - Initialize
     init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
         asyncFunc(onResolve, onRejected)
     }
-    
+
     // MARK: - Public Class Interface
     class func resolve(result: T) -> Promise<T> {
         return Promise<T>(
@@ -42,7 +42,7 @@ public class Promise<T> {
             }
         )
     }
-    
+
     class func reject(reason: NSError) -> Promise<T> {
         return Promise<T>(
             {
@@ -51,10 +51,10 @@ public class Promise<T> {
             }
         )
     }
-    
+
     // TODO: class func all()
     // TODO: class func race()
-    
+
     // MARK: - Private Methods
     private func onResolve(result: T) -> Void {
         if self.state == .Pending {
@@ -64,7 +64,7 @@ public class Promise<T> {
             resolveHandle()
         }
     }
-    
+
     private func onRejected(reason: NSError?) -> Void {
         if self.state == .Pending {
             self.reason = reason
@@ -73,13 +73,13 @@ public class Promise<T> {
             rejectHandle()
         }
     }
-    
+
     private func resolveHandle() {
         if let handler = self.resolveHandler {
             dispatch_async(dispatch_get_main_queue(), { handler() })
         }
     }
-    
+
     private func rejectHandle() {
         if let handler = self.rejectHandler {
             dispatch_async(dispatch_get_main_queue(), { handler() })
@@ -127,7 +127,7 @@ public class Promise<T> {
             }
         })
     }
-    
+
     func then<U>(resolved: ((T) -> U)) -> Promise<U> {
         return then(resolved, nil)
     }
