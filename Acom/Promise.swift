@@ -52,7 +52,27 @@ public class Promise<T> {
         )
     }
 
-    // TODO: class func all()
+    class func all(promises: [Promise]) -> Promise {
+        return Promise({ (resolve, reject) -> Void in
+            var values = [Any]()
+            var remain = promises.count
+            for promise in promises {
+                promise.then(
+                    {
+                        (result: T) -> Void in
+                        remain--
+                        values.append(result)
+                        if remain == 0 {
+                            // resolved all
+                            resolve(result) //FIXME: handle value
+                        }
+                        return
+                    }
+                )
+            }
+        })
+    }
+
     // TODO: class func race()
 
     // MARK: - Private Methods

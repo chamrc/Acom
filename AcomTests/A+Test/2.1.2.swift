@@ -76,7 +76,7 @@ class Tests2_1_2: XCTestCase {
         ).then(
             {
                 (result: String) -> Void in
-                testResult = result
+                    testResult = result
 
                 dispatch_after(5, dispatch_get_main_queue(), {
                     expectation.fulfill()
@@ -84,8 +84,8 @@ class Tests2_1_2: XCTestCase {
             },
             {
                 (reason: NSError) -> NSError in
-                testReason = reason
-                return testReason!
+                    testReason = reason
+                    return testReason!
             }
         )
 
@@ -104,15 +104,15 @@ class Tests2_1_2: XCTestCase {
         let promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                resolve(result: "Hello")
-                dispatch_async(dispatch_get_main_queue(), {
-                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
-                })
+                    resolve(result: "Hello")
+                    dispatch_async(dispatch_get_main_queue(), {
+                        reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                    })
             }
         ).then(
             {
                 (result: String) -> Void in
-                testResult = result
+                    testResult = result
                 
                 dispatch_after(5, dispatch_get_main_queue(), {
                     expectation.fulfill()
@@ -120,8 +120,8 @@ class Tests2_1_2: XCTestCase {
             },
             {
                 (reason: NSError) -> NSError in
-                testReason = reason
-                return testReason!
+                    testReason = reason
+                    return testReason!
             }
         )
 
