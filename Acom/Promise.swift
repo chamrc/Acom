@@ -90,7 +90,7 @@ public class Promise<T> {
     func then<U>(resolved: ((T) -> U)?, rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
-            var returnReason: (NSError)?
+            var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
                 if let value = self.value {

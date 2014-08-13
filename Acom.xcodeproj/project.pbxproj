@@ -11,6 +11,7 @@
 		9D7946351995ADBA0076C422 /* AcomTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D7946341995ADBA0076C422 /* AcomTests.swift */; };
 		9D79463F1995ADE60076C422 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79463E1995ADE60076C422 /* Promise.swift */; };
 		9D7946401995ADE60076C422 /* Promise.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D79463E1995ADE60076C422 /* Promise.swift */; };
+		9DDAF6C1199AD8A300BA47C7 /* 2.1.2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9DDAF6C0199AD8A300BA47C7 /* 2.1.2.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -21,6 +22,7 @@
 		9D7946331995ADBA0076C422 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		9D7946341995ADBA0076C422 /* AcomTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AcomTests.swift; sourceTree = "<group>"; };
 		9D79463E1995ADE60076C422 /* Promise.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Promise.swift; sourceTree = "<group>"; };
+		9DDAF6C0199AD8A300BA47C7 /* 2.1.2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 2.1.2.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -80,6 +82,7 @@
 		9D7946311995ADBA0076C422 /* AcomTests */ = {
 			isa = PBXGroup;
 			children = (
+				9DDAF6BF199AD87B00BA47C7 /* A+Test */,
 				9D7946341995ADBA0076C422 /* AcomTests.swift */,
 				9D7946321995ADBA0076C422 /* Supporting Files */,
 			);
@@ -92,6 +95,14 @@
 				9D7946331995ADBA0076C422 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		9DDAF6BF199AD87B00BA47C7 /* A+Test */ = {
+			isa = PBXGroup;
+			children = (
+				9DDAF6C0199AD8A300BA47C7 /* 2.1.2.swift */,
+			);
+			path = "A+Test";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -208,6 +219,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9DDAF6C1199AD8A300BA47C7 /* 2.1.2.swift in Sources */,
 				9D7946351995ADBA0076C422 /* AcomTests.swift in Sources */,
 				9D7946401995ADE60076C422 /* Promise.swift in Sources */,
 			);
@@ -383,6 +395,7 @@
 				9D79463A1995ADBA0076C422 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9D79463B1995ADBA0076C422 /* Build configuration list for PBXNativeTarget "AcomTests" */ = {
 			isa = XCConfigurationList;
@@ -391,6 +404,7 @@
 				9D79463D1995ADBA0076C422 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

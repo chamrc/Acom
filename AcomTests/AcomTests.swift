@@ -46,8 +46,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
             XCTAssertEqual("Hello", promise.value!, "")
@@ -78,8 +77,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             
             // Debug
@@ -114,8 +112,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
             XCTAssertEqual("Hello", promise.value!, "")
@@ -148,8 +145,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             
             // Debug
@@ -192,8 +188,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("HelloWorld!!", testResult, "")
             // Debug
             XCTAssertEqual("Hello", promise.value!, "")
@@ -223,8 +218,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
             XCTAssertEqual("Hello", promise.value!, "")
@@ -259,8 +253,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("HelloWorld!!", testResult, "")
             // Debug
             XCTAssertEqual("Hello", promise.value!, "")
@@ -291,8 +284,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             // Debug
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
@@ -327,8 +319,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             // Debug
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
@@ -356,8 +347,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
             // Debug
             XCTAssertEqual("Hello", promise.value!, "")
@@ -382,8 +372,7 @@ class PromiseTests: XCTestCase {
             }
         )
         
-        waitForExpectationsWithTimeout(10, handler: {
-            (error: NSError!) -> Void in
+        waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
             
             // Debug
