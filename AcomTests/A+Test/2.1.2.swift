@@ -49,6 +49,7 @@ class Tests2_1_2: XCTestCase {
             {
                 (reason: NSError) -> NSError in
                     testReason = reason
+                    XCTFail("")
                     return testReason!
             }
         )
@@ -85,6 +86,7 @@ class Tests2_1_2: XCTestCase {
             {
                 (reason: NSError) -> NSError in
                     testReason = reason
+                    XCTFail("")
                     return testReason!
             }
         )
@@ -121,6 +123,7 @@ class Tests2_1_2: XCTestCase {
             {
                 (reason: NSError) -> NSError in
                     testReason = reason
+                    XCTFail("")
                     return testReason!
             }
         )
