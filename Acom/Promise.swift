@@ -23,8 +23,8 @@ public class Promise<T> {
     var state: State = .Pending
     var value: (T)?
     var reason: (NSError)?
+    var resolveHandler: [(() -> ())] = []
     // TODO: multiple handler
-    var resolveHandler: (() -> ())?
     var rejectHandler: (() -> ())?
     var thenPromise: Promise?
 
@@ -92,7 +92,7 @@ public class Promise<T> {
     }
 
     private func resolveHandle() {
-        if let handler = self.resolveHandler {
+        for handler in resolveHandler {
             dispatch_async(dispatch_get_main_queue(), { handler() })
         }
     }
@@ -127,12 +127,12 @@ public class Promise<T> {
                     }
                 }
             case .Pending:
-                self.resolveHandler = {
+                self.resolveHandler.append({
                     if let value = self.value {
                         returnVal = resolved(value)
                         resolve(returnVal!)
                     }
-                }
+                })
                 self.rejectHandler = {
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
@@ -168,11 +168,11 @@ public class Promise<T> {
                     }
                 }
             case .Pending:
-                self.resolveHandler = {
+                self.resolveHandler.append({
                     if let value = self.value {
                         resolve(value)
                     }
-                }
+                })
                 self.rejectHandler = {
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
