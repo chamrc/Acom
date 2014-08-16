@@ -116,7 +116,11 @@ public class Promise<T> {
                 if let value = self.value {
                     // FIXME: do try-catch (Swift has no feature...)
                     returnVal = resolved?(value)
-                    resolve(returnVal!)
+                    if let returnVal = returnVal {
+                        resolve(returnVal)
+                    } else {
+                        //resolve(value) //FIXME: T is not convertible U
+                    }
                 }
             case .Rejected:
                 if let reason = self.reason {
