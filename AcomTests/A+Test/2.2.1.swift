@@ -34,17 +34,13 @@ class Tests2_2_1: XCTestCase {
         var testReason: NSError?
         let err = NSError(domain: "test", code: 1, userInfo: nil)
 
-        var nilFunction: ((result: String) -> Void)? = nil
-
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: err)
             }
             ).then(
-                nilFunction, // FIXME
-                {
-                    (reason: NSError) -> NSError in
+                nil,
+                {(reason: NSError) -> NSError in
                     testReason = reason
                     dispatch_after(5, dispatch_get_main_queue(), {
                         expectation.fulfill()
@@ -66,23 +62,18 @@ class Tests2_2_1: XCTestCase {
         var testReason: NSError?
         let err = NSError(domain: "test", code: 1, userInfo: nil)
 
-        var nilFunction: ((result: String) -> Void)? = nil
-
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: err)
             }
             ).then(
-                {
-                    (result: String) -> String in
+                {(result: String) -> String in
                     return result
                 },
                 nil
             ).then(
-                nilFunction, // FIXME
-                {
-                    (reason: NSError) -> NSError in
+                nil,
+                {(reason: NSError) -> NSError in
                     testReason = reason
                     dispatch_after(5, dispatch_get_main_queue(), {
                         expectation.fulfill()
@@ -107,16 +98,12 @@ class Tests2_2_1: XCTestCase {
         var testReason: NSError?
         let err = NSError(domain: "test", code: 1, userInfo: nil)
 
-        //var nilFunction: ((result: String) -> Void)? = nil
-
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: "Hello")
             }
             ).then(
-                {
-                    (result: String) -> Void in
+                {(result: String) -> Void in
                     testResult = result
                     dispatch_after(5, dispatch_get_main_queue(), {
                         expectation.fulfill()
@@ -130,7 +117,7 @@ class Tests2_2_1: XCTestCase {
             XCTAssertNil(testReason, "")
         })
     }
-    /*
+
     func test2_2_1_2_applied_to_a_promise_fulfilled_and_then_chained_off_of() {
         let expectation = expectationWithDescription("Promise Test")
 
@@ -138,17 +125,13 @@ class Tests2_2_1: XCTestCase {
         var testReason: NSError?
         let err = NSError(domain: "test", code: 1, userInfo: nil)
 
-        var nilFunction: ((result: String) -> String)? = nil
-
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: "Hello")
             }
             ).then(
-                nilFunction, // FIXME
-                {
-                    (reason: NSError) -> NSError in
+                nil,
+                {(reason: NSError) -> NSError in
                     testReason = reason
                     dispatch_after(5, dispatch_get_main_queue(), {
                         expectation.fulfill()
@@ -156,8 +139,7 @@ class Tests2_2_1: XCTestCase {
                     return testReason!
                 }
             ).then(
-                {
-                    (result: String) -> Void in
+                {(result: String) -> Void in
                     testResult = result
                     dispatch_after(5, dispatch_get_main_queue(), {
                         expectation.fulfill()
@@ -171,5 +153,5 @@ class Tests2_2_1: XCTestCase {
             XCTAssertNil(testReason, "")
         })
     }
-    */
+
 }

@@ -32,25 +32,22 @@ class Tests2_1_2: XCTestCase {
         var testReason: NSError?
 
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                    resolve(result: "Hello")
-                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                resolve(result: "Hello")
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
             }
         ).then(
-            {
-                (result: String) -> Void in
-                    testResult = result
+            {(result: String) -> Void in
+                testResult = result
 
                 dispatch_after(5, dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
             },
-            {
-                (reason: NSError) -> NSError in
-                    testReason = reason
-                    XCTFail("")
-                    return testReason!
+            {(reason: NSError) -> NSError in
+                testReason = reason
+                XCTFail("")
+                return testReason!
             }
         )
 
@@ -67,27 +64,24 @@ class Tests2_1_2: XCTestCase {
         var testReason: NSError?
 
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 dispatch_async(dispatch_get_main_queue(), {
                     resolve(result: "Hello")
                     reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
                 })
             }
         ).then(
-            {
-                (result: String) -> Void in
-                    testResult = result
+            {(result: String) -> Void in
+                testResult = result
 
                 dispatch_after(5, dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
             },
-            {
-                (reason: NSError) -> NSError in
-                    testReason = reason
-                    XCTFail("")
-                    return testReason!
+            {(reason: NSError) -> NSError in
+                testReason = reason
+                XCTFail("")
+                return testReason!
             }
         )
 
@@ -104,27 +98,24 @@ class Tests2_1_2: XCTestCase {
         var testReason: NSError?
 
         let promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                    resolve(result: "Hello")
-                    dispatch_async(dispatch_get_main_queue(), {
-                        reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
-                    })
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                resolve(result: "Hello")
+                dispatch_async(dispatch_get_main_queue(), {
+                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                })
             }
         ).then(
-            {
-                (result: String) -> Void in
-                    testResult = result
+            {(result: String) -> Void in
+                testResult = result
                 
                 dispatch_after(5, dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
             },
-            {
-                (reason: NSError) -> NSError in
-                    testReason = reason
-                    XCTFail("")
-                    return testReason!
+            {(reason: NSError) -> NSError in
+                testReason = reason
+                XCTFail("")
+                return testReason!
             }
         )
 

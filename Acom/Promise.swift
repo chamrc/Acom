@@ -36,8 +36,7 @@ public class Promise<T> {
     // MARK: - Public Class Interface
     class func resolve(result: T) -> Promise<T> {
         return Promise<T>(
-            {
-                (resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: result)
             }
         )
@@ -45,8 +44,7 @@ public class Promise<T> {
 
     class func reject(reason: NSError) -> Promise<T> {
         return Promise<T>(
-            {
-                (resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: reason)
             }
         )
@@ -58,8 +56,7 @@ public class Promise<T> {
             var remain = promises.count
             for promise in promises {
                 promise.then(
-                    {
-                        (result: T) -> Void in
+                    {(result: T) -> Void in
                         remain--
                         values.append(result)
                         if remain == 0 {
@@ -107,7 +104,7 @@ public class Promise<T> {
     }
 
     // MARK: - Pubic Interface
-    func then<U>(resolved: ((T) -> U)?, rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
             var returnReason: (NSError)? // FIXME: return Promise...
@@ -115,11 +112,9 @@ public class Promise<T> {
             case .Fulfilled:
                 if let value = self.value {
                     // FIXME: do try-catch (Swift has no feature...)
-                    returnVal = resolved?(value)
+                    returnVal = resolved(value)
                     if let returnVal = returnVal {
                         resolve(returnVal)
-                    } else {
-                        //resolve(value) //FIXME: T is not convertible U
                     }
                 }
             case .Rejected:
@@ -134,8 +129,48 @@ public class Promise<T> {
             case .Pending:
                 self.resolveHandler = {
                     if let value = self.value {
-                        returnVal = resolved?(value)
+                        returnVal = resolved(value)
                         resolve(returnVal!)
+                    }
+                }
+                self.rejectHandler = {
+                    if let reason = self.reason {
+                        returnReason = rejected?(reason)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
+                    }
+                }
+            }
+        })
+    }
+
+    // use for resolved is nil. Because the type to pass to resolve method is different when resolved is nil or not nil.
+    func then(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
+        assert(resolved == nil)
+        return Promise<T>( { (resolve, reject) -> Void in
+            var returnReason: (NSError)? // FIXME: return Promise...
+            switch self.state {
+            case .Fulfilled:
+                if let value = self.value {
+                    // FIXME: do try-catch (Swift has no feature...)
+                    resolve(value)
+                }
+            case .Rejected:
+                if let reason = self.reason {
+                    returnReason = rejected?(reason)
+                    if let returnReason = returnReason {
+                        reject(returnReason)
+                    } else {
+                        reject(reason)
+                    }
+                }
+            case .Pending:
+                self.resolveHandler = {
+                    if let value = self.value {
+                        resolve(value)
                     }
                 }
                 self.rejectHandler = {
