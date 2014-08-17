@@ -49,8 +49,8 @@ public class Promise<T> {
         )
     }
 
-    class func all(promises: [Promise]) -> Promise {
-        return Promise({ (resolve, reject) -> Void in
+    class func all(promises: [Promise]) -> Promise<[Any]> {
+        return Promise<[Any]>({ (resolve, reject) -> Void in
             var values = [Any]()
             var remain = promises.count
             for promise in promises {
@@ -59,8 +59,7 @@ public class Promise<T> {
                         remain--
                         values.append(result)
                         if remain == 0 {
-                            // resolved all
-                            resolve(result) //FIXME: handle value
+                            resolve(values)
                         }
                         return
                     }
@@ -114,7 +113,7 @@ public class Promise<T> {
                     returnVal = resolved(value)
                     if let returnVal = returnVal {
                         if let promise = returnVal as? Promise {
-                            assert(false)
+                            assert(false, "should not return Promise")
                         } else {
                             resolve(returnVal)
                         }
@@ -150,6 +149,7 @@ public class Promise<T> {
         })
     }
 
+    // return Promise as onResolveHandler
     func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (Promise<U>)?
@@ -162,6 +162,12 @@ public class Promise<T> {
                     if let returnVal = returnVal {
                         switch returnVal.state {
                         case .Pending:
+                            returnVal.resolveHandler.append({
+                                resolve(returnVal.value!)
+                            })
+                            returnVal.rejectHandler.append({
+                                reject(returnVal.reason!)
+                            })
                             break
                         case .Fulfilled:
                             resolve(returnVal.value!)

@@ -382,4 +382,38 @@ class PromiseTests: XCTestCase {
         })
     }
 
+    // MARK: - Promise.all()
+    func testAll_resolve_immediately() {
+        let expectation = expectationWithDescription("Promise Test")
+
+        var testResults:[Any]?
+
+        var promise = Promise.all([
+            Promise.resolve("1"),
+            Promise.resolve("2"),
+            Promise.resolve("3"),
+            ]).then({(result: [Any]) -> Void in
+                testResults = result
+                expectation.fulfill()
+        })
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            if let result = testResults![0] as? String {
+                XCTAssertEqual("1", result, "")
+            } else {
+                XCTFail("")
+            }
+            if let result = testResults![1] as? String {
+                XCTAssertEqual("2", result, "")
+            } else {
+                XCTFail("")
+            }
+            if let result = testResults![2] as? String {
+                XCTAssertEqual("3", result, "")
+            } else {
+                XCTFail("")
+            }
+        })
+    }
+
 }
