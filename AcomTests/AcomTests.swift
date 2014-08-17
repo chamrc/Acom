@@ -384,7 +384,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - Promise.all()
     func testAll_resolve_immediately() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test all")
 
         var testResults:[Any]?
 
@@ -410,6 +410,33 @@ class PromiseTests: XCTestCase {
             }
             if let result = testResults![2] as? String {
                 XCTAssertEqual("3", result, "")
+            } else {
+                XCTFail("")
+            }
+        })
+    }
+
+    // MARK: - Promise.race()
+    func testRace_resolve_immediately() {
+        let expectation = expectationWithDescription("test race")
+
+        var testResult:Any?
+
+        var promise = Promise.race([
+            Promise.resolve("1"),
+            Promise.resolve("2"),
+            Promise.resolve("3"),
+            ]).then({(result: Any) -> Void in
+                testResult = result
+
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+                    expectation.fulfill()
+                })
+            })
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            if let result = testResult as? String {
+                XCTAssertEqual("1", result, "")
             } else {
                 XCTFail("")
             }

@@ -68,7 +68,15 @@ public class Promise<T> {
         })
     }
 
-    // TODO: class func race()
+    class func race(promises: [Promise]) -> Promise<Any> {
+        return Promise<Any>({ (resolve, reject) -> Void in
+            for promise in promises {
+                promise.then({(result: T) -> Void in
+                    resolve(result)
+                })
+            }
+        })
+    }
 
     // MARK: - Private Methods
     private func onResolve(result: T) -> Void {
