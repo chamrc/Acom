@@ -27,8 +27,8 @@ class Tests2_2_2: XCTestCase {
     /*
     2.2.2.1: it must be called after `promise` is fulfilled, with `promise`’s fulfillment value as its first argument.
     */
-    func test2_2_2_1_() {
-        let expectation = expectationWithDescription("Promise Test")
+    func test2_2_2_1() {
+        let expectation = expectationWithDescription("test2_2_2_1")
 
         var testResult: String?
         var testReason: NSError?
@@ -57,7 +57,7 @@ class Tests2_2_2: XCTestCase {
     2.2.2.2: it must not be called before `promise` is fulfilled
     */
     func test2_2_2_2_fulfilled_after_a_delay() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_2_1")
 
         var testResult: String?
         var testReason: NSError?
@@ -86,7 +86,7 @@ class Tests2_2_2: XCTestCase {
     }
 
     func test2_2_2_2_never_fulfilled() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_2_2")
 
         var testResult: String?
         var testReason: NSError?
@@ -117,7 +117,7 @@ class Tests2_2_2: XCTestCase {
     2.2.2.3: it must not be called more than once.
     */
     func test2_2_2_3_already_fulfilled() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_3_1")
 
         var timesCalled = 0
 
@@ -132,7 +132,7 @@ class Tests2_2_2: XCTestCase {
     }
 
     func test2_2_2_3_trying_to_fulfill_a_pending_promise_more_than_once_immediately() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_3_2")
 
         var timesCalled = 0
 
@@ -156,7 +156,7 @@ class Tests2_2_2: XCTestCase {
     }
 
     func test2_2_2_3_trying_to_fulfill_a_pending_promise_more_than_once_delayed() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_3_3")
 
         var timesCalled = 0
 
@@ -182,7 +182,7 @@ class Tests2_2_2: XCTestCase {
     }
 
     func test2_2_2_3_trying_to_fulfill_a_pending_promise_more_than_once_immediately_then_delayed() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_3_4")
 
         var timesCalled = 0
 
@@ -208,7 +208,7 @@ class Tests2_2_2: XCTestCase {
     }
 
     func test2_2_2_3_when_multiple_then_calls_are_made_spaced_apart_in_time() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_2_3_5")
 
         var timesCalled1 = 0
         var timesCalled2 = 0

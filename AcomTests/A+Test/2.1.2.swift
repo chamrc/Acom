@@ -26,7 +26,7 @@ class Tests2_1_2: XCTestCase {
         2.1.2.1: When fulfilled, a promise: must not transition to any other state.
      */
     func test2_1_2_1_trying_to_fulfill_then_immediately_reject() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_1_2_1_1")
 
         var testResult: String?
         var testReason: NSError?
@@ -58,7 +58,7 @@ class Tests2_1_2: XCTestCase {
     }
 
     func test_2_1_2_1_trying_to_fulfill_then_reject_delayed() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_1_2_1_2")
 
         var testResult: String?
         var testReason: NSError?
@@ -92,7 +92,7 @@ class Tests2_1_2: XCTestCase {
     }
 
     func test_2_1_2_1_trying_to_fulfill_immediately_then_reject_delayed() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_1_2_1_3")
 
         var testResult: String?
         var testReason: NSError?

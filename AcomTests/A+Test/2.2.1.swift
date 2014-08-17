@@ -28,7 +28,7 @@ class Tests2_2_1: XCTestCase {
        2.2.1.1: If `onFulfilled` is not a function, it must be ignored.
     */
     func test2_2_1_1_applied_to_a_directly_rejected_promise() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_1_1_1")
 
         var testResult: String?
         var testReason: NSError?
@@ -56,7 +56,7 @@ class Tests2_2_1: XCTestCase {
     }
 
     func test2_2_1_1_applied_to_a_promise_rejected_and_then_chained_off_of() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_1_1_2")
 
         var testResult: String?
         var testReason: NSError?
@@ -92,7 +92,7 @@ class Tests2_2_1: XCTestCase {
        2.2.1.2: If `onRejected` is not a function, it must be ignored.
     */
     func test2_2_1_2_applied_to_a_directly_fulfilled_promise() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_1_2_1")
 
         var testResult: String?
         var testReason: NSError?
@@ -119,7 +119,7 @@ class Tests2_2_1: XCTestCase {
     }
 
     func test2_2_1_2_applied_to_a_promise_fulfilled_and_then_chained_off_of() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("test2_2_1_2_1")
 
         var testResult: String?
         var testReason: NSError?

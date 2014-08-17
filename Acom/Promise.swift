@@ -113,7 +113,11 @@ public class Promise<T> {
                     // FIXME: do try-catch (Swift has no feature...)
                     returnVal = resolved(value)
                     if let returnVal = returnVal {
-                        resolve(returnVal)
+                        if let promise = returnVal as? Promise {
+                            assert(false)
+                        } else {
+                            resolve(returnVal)
+                        }
                     }
                 }
             case .Rejected:
@@ -130,6 +134,69 @@ public class Promise<T> {
                     if let value = self.value {
                         returnVal = resolved(value)
                         resolve(returnVal!)
+                    }
+                })
+                self.rejectHandler.append({
+                    if let reason = self.reason {
+                        returnReason = rejected?(reason)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
+                    }
+                })
+            }
+        })
+    }
+
+    func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+        return Promise<U>( { (resolve, reject) -> Void in
+            var returnVal: (Promise<U>)?
+            var returnReason: (NSError)? // FIXME: return Promise...
+            switch self.state {
+            case .Fulfilled:
+                if let value = self.value {
+                    // FIXME: do try-catch (Swift has no feature...)
+                    returnVal = resolved(value)
+                    if let returnVal = returnVal {
+                        switch returnVal.state {
+                        case .Pending:
+                            break
+                        case .Fulfilled:
+                            resolve(returnVal.value!)
+                            break
+                        case .Rejected:
+                            reject(returnVal.reason!)
+                            break
+                        }
+                    }
+                }
+            case .Rejected:
+                if let reason = self.reason {
+                    returnReason = rejected?(reason)
+                    if let returnReason = returnReason {
+                        reject(returnReason)
+                    } else {
+                        reject(reason)
+                    }
+                }
+            case .Pending:
+                self.resolveHandler.append({
+                    if let value = self.value {
+                        returnVal = resolved(value)
+                        if let returnVal = returnVal {
+                            switch returnVal.state {
+                            case .Pending:
+                                break
+                            case .Fulfilled:
+                                resolve(returnVal.value!)
+                                break
+                            case .Rejected:
+                                reject(returnVal.reason!)
+                                break
+                            }
+                        }
                     }
                 })
                 self.rejectHandler.append({
@@ -187,6 +254,10 @@ public class Promise<T> {
     }
 
     func then<U>(resolved: ((T) -> U)) -> Promise<U> {
+        return then(resolved, nil)
+    }
+
+    func then<U>(resolved: ((T) -> Promise<U>)) -> Promise<U> {
         return then(resolved, nil)
     }
 
