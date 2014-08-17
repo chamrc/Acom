@@ -24,8 +24,7 @@ public class Promise<T> {
     var value: (T)?
     var reason: (NSError)?
     var resolveHandler: [(() -> ())] = []
-    // TODO: multiple handler
-    var rejectHandler: (() -> ())?
+    var rejectHandler: [(() -> ())] = []
     var thenPromise: Promise?
 
     // MARK: - Initialize
@@ -98,7 +97,7 @@ public class Promise<T> {
     }
 
     private func rejectHandle() {
-        if let handler = self.rejectHandler {
+        for handler in rejectHandler {
             dispatch_async(dispatch_get_main_queue(), { handler() })
         }
     }
@@ -133,7 +132,7 @@ public class Promise<T> {
                         resolve(returnVal!)
                     }
                 })
-                self.rejectHandler = {
+                self.rejectHandler.append({
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
                         if let returnReason = returnReason {
@@ -142,7 +141,7 @@ public class Promise<T> {
                             reject(reason)
                         }
                     }
-                }
+                })
             }
         })
     }
@@ -173,7 +172,7 @@ public class Promise<T> {
                         resolve(value)
                     }
                 })
-                self.rejectHandler = {
+                self.rejectHandler.append({
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
                         if let returnReason = returnReason {
@@ -182,7 +181,7 @@ public class Promise<T> {
                             reject(reason)
                         }
                     }
-                }
+                })
             }
         })
     }
@@ -203,7 +202,7 @@ public class Promise<T> {
                     reject(returnReason)
                 }
             case .Pending:
-                self.rejectHandler = {
+                self.rejectHandler.append({
                     if let reason = self.reason {
                         returnReason = rejected(reason)
                         if let returnReason = returnReason {
@@ -212,7 +211,7 @@ public class Promise<T> {
                             reject(reason)
                         }
                     }
-                }
+                })
             }
         })
     }
