@@ -57,7 +57,7 @@ class Tests2_1_2: XCTestCase {
         })
     }
 
-    func test_2_1_2_1_trying_to_fulfill_then_reject_delayed() {
+    func test2_1_2_1_trying_to_fulfill_then_reject_delayed() {
         let expectation = expectationWithDescription("test2_1_2_1_2")
 
         var testResult: String?
@@ -91,7 +91,7 @@ class Tests2_1_2: XCTestCase {
         })
     }
 
-    func test_2_1_2_1_trying_to_fulfill_immediately_then_reject_delayed() {
+    func test2_1_2_1_trying_to_fulfill_immediately_then_reject_delayed() {
         let expectation = expectationWithDescription("test2_1_2_1_3")
 
         var testResult: String?
