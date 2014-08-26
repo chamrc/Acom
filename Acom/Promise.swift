@@ -25,7 +25,6 @@ public class Promise<T> {
     var reason: (NSError)?
     var resolveHandler: [(() -> ())] = []
     var rejectHandler: [(() -> ())] = []
-    var thenPromise: Promise?
 
     // MARK: - Initialize
     init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
