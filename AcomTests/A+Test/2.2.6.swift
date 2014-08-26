@@ -29,7 +29,7 @@ class Tests2_2_6: XCTestCase {
         2.2.6.1: If/when `promise` is fulfilled, all respective `onFulfilled` callbacks must execute in the order of their originating calls to `then`.
     */
     func test2_2_6_1_multiple_boring_fulfillment_handlers() {
-        let expectation = expectationWithDescription("test2_2_6_1")
+        let expectation = expectationWithDescription("test2_2_6_1_1")
 
         var testResult1: String?
         var testResult2: String?
@@ -72,7 +72,7 @@ class Tests2_2_6: XCTestCase {
     */
 
     func test2_2_6_1_results_in_multiple_branching_chains_with_their_own_fulfillment_values() {
-        let expectation = expectationWithDescription("test2_2_6_2")
+        let expectation = expectationWithDescription("test2_2_6_1_2")
 
         var testResult1: String?
         var testResult2: String?
@@ -120,7 +120,7 @@ class Tests2_2_6: XCTestCase {
     }
 
     func test2_2_6_1_onFulfilled_handlers_are_called_in_the_original_order() {
-        let expectation = expectationWithDescription("test2_2_6_3")
+        let expectation = expectationWithDescription("test2_2_6_1_3")
 
         var testResults = [String]()
 
@@ -154,7 +154,7 @@ class Tests2_2_6: XCTestCase {
     }
 
     func test2_2_6_1_even_when_one_handler_is_added_inside_another_handler() {
-        let expectation = expectationWithDescription("test2_2_6_4")
+        let expectation = expectationWithDescription("test2_2_6_1_4")
 
         var testResults = [String]()
 
@@ -191,6 +191,253 @@ class Tests2_2_6: XCTestCase {
             XCTAssertEqual(testResults[0], "Hello1", "")
             XCTAssertEqual(testResults[1], "Hello2", "")
             XCTAssertEqual(testResults[2], "Hello3", "")
+        })
+    }
+
+    /*
+        "2.2.6.2: If/when `promise` is rejected, all respective `onRejected` callbacks must execute in the order of their originating calls to `then`.
+    */
+    func test2_2_6_2_multiple_boring_rejection_handlers() {
+        let expectation = expectationWithDescription("test2_2_6_2_1")
+
+        var error = NSError(domain: "test", code: 1, userInfo: nil)
+
+        var testReason1: NSError?
+        var testReason2: NSError?
+        var testReason3: NSError?
+
+        let promise = Promise<NSError>.reject(error)
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason1 = reason
+                return reason
+            }
+        )
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason2 = reason
+                return reason
+            }
+        )
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason3 = reason
+                return reason
+            }
+        )
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+            expectation.fulfill()
+        })
+
+        waitForExpectationsWithTimeout(10, handler: {err in
+            XCTAssertEqual(testReason1!, error, "")
+            XCTAssertEqual(testReason2!, error, "")
+            XCTAssertEqual(testReason3!, error, "")
+        })
+    }
+
+    /* can't throw exception on Swift..
+    func test2_2_6_2_multiple_rejection_handlers_one_of_which_throws() {
+        let expectation = expectationWithDescription("test2_2_6_2_2")
+
+        var error = NSError(domain: "test", code: 1, userInfo: nil)
+
+        var testReason1: NSError?
+        var testReason2: NSError?
+        var testReason3: NSError?
+
+        let promise = Promise<NSError>.reject(error)
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason1 = reason
+                return reason
+            }
+        )
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason2 = reason
+                // TODO: throw exception
+            }
+        )
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason3 = reason
+                return reason
+            }
+        )
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+            expectation.fulfill()
+        })
+
+        waitForExpectationsWithTimeout(10, handler: {err in
+            XCTAssertEqual(testReason1!, error, "")
+            XCTAssertEqual(testReason2!, error, "")
+            XCTAssertEqual(testReason3!, error, "")
+        })
+    }
+    */
+
+    func test2_2_6_2_results_in_multiple_branching_chains_with_their_own_fulfillment_values() {
+        let expectation = expectationWithDescription("test2_2_6_2_3")
+
+        var error1 = NSError(domain: "test1", code: 1, userInfo: nil)
+        var error2 = NSError(domain: "test2", code: 2, userInfo: nil)
+        var error3 = NSError(domain: "test3", code: 3, userInfo: nil)
+
+        var testReason1: NSError?
+        var testReason2: NSError?
+        var testReason3: NSError?
+
+        let promise = Promise<NSError>.reject(error1)
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                return reason
+            }
+        ).then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReason1 = reason
+                return reason
+            }
+        )
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                return error2
+            }
+        ).then(
+                nil,
+                {(reason: NSError) -> NSError in
+                    testReason2 = reason
+                    return reason
+                }
+        )
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                return error3
+            }
+        ).then(
+                nil,
+                {(reason: NSError) -> NSError in
+                    testReason3 = reason
+                    return reason
+                }
+        )
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+            expectation.fulfill()
+        })
+
+        waitForExpectationsWithTimeout(10, handler: {err in
+            XCTAssertEqual(testReason1!, error1, "")
+            XCTAssertEqual(testReason2!, error2, "")
+            XCTAssertEqual(testReason3!, error3, "")
+        })
+    }
+
+    func test2_2_6_2_onRejected_handlers_are_called_in_the_original_order() {
+        let expectation = expectationWithDescription("test2_2_6_2_4")
+
+        var error1 = NSError(domain: "test1", code: 1, userInfo: nil)
+        var error2 = NSError(domain: "test2", code: 2, userInfo: nil)
+        var error3 = NSError(domain: "test3", code: 3, userInfo: nil)
+
+        var testReasons = [NSError]()
+
+        let promise = Promise<NSError>.reject(error1)
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReasons.append(error1)
+                return reason
+            }
+        )
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReasons.append(error2)
+                return reason
+            }
+        )
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReasons.append(error3)
+                return reason
+            }
+        )
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+            expectation.fulfill()
+        })
+
+        waitForExpectationsWithTimeout(10, handler: {err in
+            XCTAssertEqual(testReasons[0], error1, "")
+            XCTAssertEqual(testReasons[1], error2, "")
+            XCTAssertEqual(testReasons[2], error3, "")
+        })
+    }
+
+    func test2_2_6_2_even_when_one_handler_is_added_inside_another_handler() {
+        let expectation = expectationWithDescription("test2_2_6_2_5")
+
+        var error1 = NSError(domain: "test1", code: 1, userInfo: nil)
+        var error2 = NSError(domain: "test2", code: 2, userInfo: nil)
+        var error3 = NSError(domain: "test3", code: 3, userInfo: nil)
+
+        var testReasons = [NSError]()
+
+        let promise = Promise<NSError>.reject(error1)
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReasons.append(error1)
+
+                promise.then(
+                    nil,
+                    {(reason: NSError) -> NSError in
+                        testReasons.append(error3)
+                        return reason
+                    }
+                )
+
+                return reason
+            }
+        )
+
+        promise.then(
+            nil,
+            {(reason: NSError) -> NSError in
+                testReasons.append(error2)
+                return reason
+            }
+        )
+
+        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+            expectation.fulfill()
+        })
+
+        waitForExpectationsWithTimeout(10, handler: {err in
+            XCTAssertEqual(testReasons[0], error1, "")
+            XCTAssertEqual(testReasons[1], error2, "")
+            XCTAssertEqual(testReasons[2], error3, "")
         })
     }
 }

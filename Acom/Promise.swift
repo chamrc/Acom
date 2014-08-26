@@ -115,26 +115,30 @@ public class Promise<T> {
             var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
-                if let value = self.value {
-                    // FIXME: do try-catch (Swift has no feature...)
-                    returnVal = resolved(value)
-                    if let returnVal = returnVal {
-                        if let promise = returnVal as? Promise {
-                            assert(false, "should not return Promise")
-                        } else {
-                            resolve(returnVal)
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let value = self.value {
+                        // FIXME: do try-catch (Swift has no feature...)
+                        returnVal = resolved(value)
+                        if let returnVal = returnVal {
+                            if let promise = returnVal as? Promise {
+                                assert(false, "should not return Promise")
+                            } else {
+                                resolve(returnVal)
+                            }
                         }
                     }
-                }
+                })
             case .Rejected:
-                if let reason = self.reason {
-                    returnReason = rejected?(reason)
-                    if let returnReason = returnReason {
-                        reject(returnReason)
-                    } else {
-                        reject(reason)
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let reason = self.reason {
+                        returnReason = rejected?(reason)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
                     }
-                }
+                })
             case .Pending:
                 self.resolveHandler.append({
                     if let value = self.value {
@@ -238,14 +242,16 @@ public class Promise<T> {
                     resolve(value)
                 }
             case .Rejected:
-                if let reason = self.reason {
-                    returnReason = rejected?(reason)
-                    if let returnReason = returnReason {
-                        reject(returnReason)
-                    } else {
-                        reject(reason)
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let reason = self.reason {
+                        returnReason = rejected?(reason)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
                     }
-                }
+                })
             case .Pending:
                 self.resolveHandler.append({
                     if let value = self.value {
