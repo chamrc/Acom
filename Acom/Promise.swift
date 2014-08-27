@@ -10,10 +10,10 @@ import Foundation
 
 // FIXME : define into class. can't define now because of compiler bug..
 enum State {
-        case Pending
-        case Fulfilled
-        case Rejected
-    }
+    case Pending
+    case Fulfilled
+    case Rejected
+}
 
 public class Promise<T> {
     typealias OnResolved = (T) -> Void
@@ -34,15 +34,15 @@ public class Promise<T> {
     // MARK: - Public Class Interface
     class func resolve(result: T) -> Promise<T> {
         return Promise<T>(
-            {(resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: T) -> Void, reject) -> Void in
                 resolve(result: result)
             }
         )
     }
 
-    class func reject(reason: NSError) -> Promise<T> {
-        return Promise<T>(
-            {(resolve: (result: T) -> Void, reject: (reason: NSError) -> Void) -> Void in
+    class func reject(reason: NSError) -> Promise<NSError> {
+        return Promise<NSError>(
+            {(resolve, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: reason)
             }
         )
@@ -54,7 +54,7 @@ public class Promise<T> {
             var remain = promises.count
             for promise in promises {
                 promise.then(
-                    {(result: T) -> Void in
+                    { (result: T) -> Void in
                         remain--
                         values.append(result)
                         if remain == 0 {
@@ -167,37 +167,41 @@ public class Promise<T> {
             var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
-                if let value = self.value {
-                    // FIXME: do try-catch (Swift has no feature...)
-                    returnVal = resolved(value)
-                    if let returnVal = returnVal {
-                        switch returnVal.state {
-                        case .Pending:
-                            returnVal.resolveHandler.append({
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let value = self.value {
+                        // FIXME: do try-catch (Swift has no feature...)
+                        returnVal = resolved(value)
+                        if let returnVal = returnVal {
+                            switch returnVal.state {
+                            case .Pending:
+                                returnVal.resolveHandler.append({
+                                    resolve(returnVal.value!)
+                                })
+                                returnVal.rejectHandler.append({
+                                    reject(returnVal.reason!)
+                                })
+                                break
+                            case .Fulfilled:
                                 resolve(returnVal.value!)
-                            })
-                            returnVal.rejectHandler.append({
+                                break
+                            case .Rejected:
                                 reject(returnVal.reason!)
-                            })
-                            break
-                        case .Fulfilled:
-                            resolve(returnVal.value!)
-                            break
-                        case .Rejected:
-                            reject(returnVal.reason!)
-                            break
+                                break
+                            }
                         }
                     }
-                }
+                })
             case .Rejected:
-                if let reason = self.reason {
-                    returnReason = rejected?(reason)
-                    if let returnReason = returnReason {
-                        reject(returnReason)
-                    } else {
-                        reject(reason)
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let reason = self.reason {
+                        returnReason = rejected?(reason)
+                        if let returnReason = returnReason {
+                            reject(returnReason)
+                        } else {
+                            reject(reason)
+                        }
                     }
-                }
+                })
             case .Pending:
                 self.resolveHandler.append({
                     if let value = self.value {
@@ -237,10 +241,12 @@ public class Promise<T> {
             var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
-                if let value = self.value {
-                    // FIXME: do try-catch (Swift has no feature...)
-                    resolve(value)
-                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let value = self.value {
+                        // FIXME: do try-catch (Swift has no feature...)
+                        resolve(value)
+                    }
+                })
             case .Rejected:
                 dispatch_async(dispatch_get_main_queue(), {
                     if let reason = self.reason {
@@ -287,10 +293,12 @@ public class Promise<T> {
             case .Fulfilled:
                 break
             case .Rejected:
-                if let reason = self.reason {
-                    returnReason = rejected(reason)
-                    reject(returnReason)
-                }
+                dispatch_async(dispatch_get_main_queue(), {
+                    if let reason = self.reason {
+                        returnReason = rejected(reason)
+                        reject(returnReason)
+                    }
+                })
             case .Pending:
                 self.rejectHandler.append({
                     if let reason = self.reason {
