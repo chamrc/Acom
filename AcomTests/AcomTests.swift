@@ -48,10 +48,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
-            // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertEqual(State.Fulfilled, promise.state, "")
-            XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
 
@@ -79,11 +75,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-            
-            // Debug
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
-            XCTAssertEqual(State.Rejected, promise.state, "")
-            XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
 
@@ -114,10 +105,6 @@ class PromiseTests: XCTestCase {
         
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
-            // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertEqual(State.Fulfilled, promise.state, "")
-            XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
 
@@ -147,11 +134,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-
-            // Debug
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
-            XCTAssertEqual(State.Rejected, promise.state, "")
-            XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
 
@@ -190,11 +172,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("HelloWorld!!", testResult, "")
-            // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertEqual("HelloWorld", promise2.value!, "")
-            XCTAssertEqual(State.Fulfilled, promise.state, "")
-            XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
 
@@ -220,10 +197,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
-            // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertEqual(State.Fulfilled, promise.state, "")
-            XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
 
@@ -255,11 +228,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("HelloWorld!!", testResult, "")
-            // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertEqual(State.Fulfilled, promise.state, "")
-            XCTAssertEqual(State.Fulfilled, promise2.state, "")
-            XCTAssertEqual(State.Fulfilled, promise3.state, "")
         })
     }
 
@@ -286,10 +254,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-            // Debug
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
-            XCTAssertEqual(State.Rejected, promise.state, "")
-            XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
 
@@ -321,10 +285,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-            // Debug
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
-            XCTAssertEqual(State.Rejected, promise.state, "")
-            XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
 
@@ -349,10 +309,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
-            // Debug
-            XCTAssertEqual("Hello", promise.value!, "")
-            XCTAssertEqual(State.Fulfilled, promise.state, "")
-            XCTAssertEqual(State.Fulfilled, promise2.state, "")
         })
     }
 
@@ -374,11 +330,6 @@ class PromiseTests: XCTestCase {
 
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
-
-            // Debug
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), promise.reason!, "")
-            XCTAssertEqual(State.Rejected, promise.state, "")
-            XCTAssertEqual(State.Rejected, promise2.state, "")
         })
     }
 

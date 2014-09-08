@@ -6,10 +6,6 @@
 //  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
 //
 
-import Foundation
-
-import Foundation
-
 import UIKit
 import XCTest
 

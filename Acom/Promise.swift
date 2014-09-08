@@ -8,7 +8,7 @@
 
 import Foundation
 
-// FIXME : define into class. can't define now because of compiler bug..
+// FIXME : can't nest in generic type
 enum State {
     case Pending
     case Fulfilled
@@ -19,12 +19,11 @@ public class Promise<T> {
     typealias OnResolved = (T) -> Void
     typealias OnRejected = (NSError?) -> Void
 
-    // TODO: private
-    var state: State = .Pending
-    var value: (T)?
-    var reason: (NSError)?
-    var resolveHandler: [(() -> ())] = []
-    var rejectHandler: [(() -> ())] = []
+    private var state: State = .Pending
+    private var value: (T)?
+    private var reason: (NSError)?
+    private var resolveHandler: [(() -> ())] = []
+    private var rejectHandler: [(() -> ())] = []
 
     // MARK: - Initialize
     init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
@@ -54,7 +53,7 @@ public class Promise<T> {
             var remain = promises.count
             for promise in promises {
                 promise.then(
-                    { (result: T) -> Void in
+                    {(result: T) -> Void in
                         remain--
                         values.append(result)
                         if remain == 0 {
