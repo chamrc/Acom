@@ -3,7 +3,7 @@
 //  Acom
 //
 //  Created by yanamura on 2014/08/14.
-//  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
+//  Copyright (c) 2014 Yasuharu Yanamura. All rights reserved.
 //
 
 import UIKit
@@ -42,7 +42,7 @@ class Tests2_2_1: XCTestCase {
                 nil,
                 {(reason: NSError) -> NSError in
                     testReason = reason
-                    dispatch_after(5, dispatch_get_main_queue(), {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                         expectation.fulfill()
                     })
                     return testReason!
@@ -75,7 +75,7 @@ class Tests2_2_1: XCTestCase {
                 nil,
                 {(reason: NSError) -> NSError in
                     testReason = reason
-                    dispatch_after(5, dispatch_get_main_queue(), {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                         expectation.fulfill()
                     })
                     return testReason!
@@ -105,7 +105,7 @@ class Tests2_2_1: XCTestCase {
             ).then(
                 {(result: String) -> Void in
                     testResult = result
-                    dispatch_after(5, dispatch_get_main_queue(), {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                         expectation.fulfill()
                     })
                 },
@@ -133,7 +133,7 @@ class Tests2_2_1: XCTestCase {
                 nil,
                 {(reason: NSError) -> NSError in
                     testReason = reason
-                    dispatch_after(5, dispatch_get_main_queue(), {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                         expectation.fulfill()
                     })
                     return testReason!
@@ -141,7 +141,7 @@ class Tests2_2_1: XCTestCase {
             ).then(
                 {(result: String) -> Void in
                     testResult = result
-                    dispatch_after(5, dispatch_get_main_queue(), {
+                    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                         expectation.fulfill()
                     })
                 },

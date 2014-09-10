@@ -3,7 +3,7 @@
 //  Acom
 //
 //  Created by yanamura on 2014/08/27.
-//  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
+//  Copyright (c) 2014 Yasuharu Yanamura. All rights reserved.
 //
 
 

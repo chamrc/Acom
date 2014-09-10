@@ -3,7 +3,7 @@
 //  Acom
 //
 //  Created by yanamura on 2014/08/09.
-//  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
+//  Copyright (c) 2014 Yasuharu Yanamura. All rights reserved.
 //
 
 import Foundation
@@ -14,6 +14,8 @@ enum State {
     case Fulfilled
     case Rejected
 }
+
+let dispatchQueue = dispatch_queue_create("AcomThread", DISPATCH_QUEUE_SERIAL)
 
 public class Promise<T> {
     typealias OnResolved = (T) -> Void
@@ -54,11 +56,13 @@ public class Promise<T> {
             for promise in promises {
                 promise.then(
                     {(result: T) -> Void in
+                        objc_sync_enter(self)
                         remain--
                         values.append(result)
                         if remain == 0 {
                             resolve(values)
                         }
+                        objc_sync_exit(self)
                         return
                     }
                 )
@@ -96,25 +100,29 @@ public class Promise<T> {
     }
 
     private func resolveHandle() {
+        objc_sync_enter(self)
         for handler in resolveHandler {
-            dispatch_async(dispatch_get_main_queue(), { handler() })
+            dispatch_async(dispatchQueue, { handler() })
         }
+        objc_sync_exit(self)
     }
 
     private func rejectHandle() {
+        objc_sync_enter(self)
         for handler in rejectHandler {
-            dispatch_async(dispatch_get_main_queue(), { handler() })
+            dispatch_async(dispatchQueue, { handler() })
         }
+        objc_sync_exit(self)
     }
 
     // MARK: - Pubic Interface
-    func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    private func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?, dispatchQueue: dispatch_queue_t) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (U)?
             var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let value = self.value {
                         // FIXME: do try-catch (Swift has no feature...)
                         returnVal = resolved(value)
@@ -128,7 +136,7 @@ public class Promise<T> {
                     }
                 })
             case .Rejected:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
                         if let returnReason = returnReason {
@@ -139,6 +147,7 @@ public class Promise<T> {
                     }
                 })
             case .Pending:
+                objc_sync_enter(self)
                 self.resolveHandler.append({
                     if let value = self.value {
                         returnVal = resolved(value)
@@ -155,18 +164,19 @@ public class Promise<T> {
                         }
                     }
                 })
+                objc_sync_exit(self)
             }
         })
     }
 
     // return Promise as onResolveHandler
-    func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    private func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?, dispatchQueue: dispatch_queue_t) -> Promise<U> {
         return Promise<U>( { (resolve, reject) -> Void in
             var returnVal: (Promise<U>)?
             var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let value = self.value {
                         // FIXME: do try-catch (Swift has no feature...)
                         returnVal = resolved(value)
@@ -191,7 +201,7 @@ public class Promise<T> {
                     }
                 })
             case .Rejected:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
                         if let returnReason = returnReason {
@@ -202,6 +212,7 @@ public class Promise<T> {
                     }
                 })
             case .Pending:
+                objc_sync_enter(self)
                 self.resolveHandler.append({
                     if let value = self.value {
                         returnVal = resolved(value)
@@ -229,25 +240,26 @@ public class Promise<T> {
                         }
                     }
                 })
+                objc_sync_exit(self)
             }
         })
     }
 
     // use for resolved is nil. Because the type to pass to resolve method is different when resolved is nil or not nil.
-    func then(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
+    private func then(resolved: (T)?, rejected: ((NSError) -> NSError)?, dispatchQueue: dispatch_queue_t) -> Promise<T> {
         assert(resolved == nil)
         return Promise<T>( { (resolve, reject) -> Void in
             var returnReason: (NSError)? // FIXME: return Promise...
             switch self.state {
             case .Fulfilled:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let value = self.value {
                         // FIXME: do try-catch (Swift has no feature...)
                         resolve(value)
                     }
                 })
             case .Rejected:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let reason = self.reason {
                         returnReason = rejected?(reason)
                         if let returnReason = returnReason {
@@ -258,6 +270,7 @@ public class Promise<T> {
                     }
                 })
             case .Pending:
+                objc_sync_enter(self)
                 self.resolveHandler.append({
                     if let value = self.value {
                         resolve(value)
@@ -273,8 +286,21 @@ public class Promise<T> {
                         }
                     }
                 })
+                objc_sync_exit(self)
             }
         })
+    }
+
+    func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+        return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
+    }
+
+    func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+        return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
+    }
+
+    func then(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
+        return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
     }
 
     func then<U>(resolved: ((T) -> U)) -> Promise<U> {
@@ -285,20 +311,21 @@ public class Promise<T> {
         return then(resolved, nil)
     }
 
-    func catch(rejected: (NSError) -> NSError) -> Promise<NSError> {
+    private func catch(rejected: (NSError) -> NSError, dispatchQueue: dispatch_queue_t) -> Promise<NSError> {
         return Promise<NSError>( { (resolve, reject) -> Void in
             var returnReason: (NSError)?
             switch self.state {
             case .Fulfilled:
                 break
             case .Rejected:
-                dispatch_async(dispatch_get_main_queue(), {
+                dispatch_async(dispatchQueue, {
                     if let reason = self.reason {
                         returnReason = rejected(reason)
                         reject(returnReason)
                     }
                 })
             case .Pending:
+                objc_sync_enter(self)
                 self.rejectHandler.append({
                     if let reason = self.reason {
                         returnReason = rejected(reason)
@@ -309,7 +336,12 @@ public class Promise<T> {
                         }
                     }
                 })
+                objc_sync_exit(self)
             }
         })
+    }
+
+    func catch(rejected: (NSError) -> NSError) -> Promise<NSError> {
+        return self.catch(rejected, dispatchQueue: dispatchQueue)
     }
 }

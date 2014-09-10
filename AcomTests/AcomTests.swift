@@ -3,7 +3,7 @@
 //  AcomTests
 //
 //  Created by yanamura on 2014/08/09.
-//  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
+//  Copyright (c) 2014 Yasuharu Yanamura. All rights reserved.
 //
 
 import UIKit
@@ -86,7 +86,7 @@ class PromiseTests: XCTestCase {
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5), dispatch_get_main_queue(), {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     resolve(result: "Hello")
                 })
             }
@@ -115,7 +115,7 @@ class PromiseTests: XCTestCase {
         var promise = Promise(
             {
                 (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5), dispatch_get_main_queue(), {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
                 })
             }
@@ -317,7 +317,7 @@ class PromiseTests: XCTestCase {
         let expectation = expectationWithDescription("Promise Test")
 
         var testResult: NSError?
-        var error = NSError(domain: "test", code: 1, userInfo: nil)
+        let error = NSError(domain: "test", code: 1, userInfo: nil)
         var promise = Promise<NSError>.reject(error)
         var promise2 = promise.catch(
             {
@@ -343,9 +343,9 @@ class PromiseTests: XCTestCase {
             Promise.resolve("1"),
             Promise.resolve("2"),
             Promise.resolve("3"),
-            ]).then({(result: [Any]) -> Void in
-                testResults = result
-                expectation.fulfill()
+        ]).then({(result: [Any]) -> Void in
+            testResults = result
+            expectation.fulfill()
         })
 
         waitForExpectationsWithTimeout(10, handler: {error in

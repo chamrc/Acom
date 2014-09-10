@@ -3,7 +3,7 @@
 //  Acom
 //
 //  Created by yanamura on 2014/08/13.
-//  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
+//  Copyright (c) 2014 Yasuharu Yanamura. All rights reserved.
 //
 
 
@@ -40,7 +40,7 @@ class Tests2_1_2: XCTestCase {
             {(result: String) -> Void in
                 testResult = result
 
-                dispatch_after(5, dispatch_get_main_queue(), {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
             },
@@ -74,7 +74,7 @@ class Tests2_1_2: XCTestCase {
             {(result: String) -> Void in
                 testResult = result
 
-                dispatch_after(5, dispatch_get_main_queue(), {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
             },
@@ -108,7 +108,7 @@ class Tests2_1_2: XCTestCase {
             {(result: String) -> Void in
                 testResult = result
                 
-                dispatch_after(5, dispatch_get_main_queue(), {
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
             },

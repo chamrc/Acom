@@ -3,7 +3,7 @@
 //  Acom
 //
 //  Created by yanamura on 2014/08/18.
-//  Copyright (c) 2014年 Yasuharu Yanamura. All rights reserved.
+//  Copyright (c) 2014 Yasuharu Yanamura. All rights reserved.
 //
 
 
@@ -290,9 +290,9 @@ class Tests2_2_6: XCTestCase {
     func test2_2_6_2_results_in_multiple_branching_chains_with_their_own_fulfillment_values() {
         let expectation = expectationWithDescription("test2_2_6_2_3")
 
-        var error1 = NSError(domain: "test1", code: 1, userInfo: nil)
-        var error2 = NSError(domain: "test2", code: 2, userInfo: nil)
-        var error3 = NSError(domain: "test3", code: 3, userInfo: nil)
+        let error1 = NSError(domain: "test1", code: 1, userInfo: nil)
+        let error2 = NSError(domain: "test2", code: 2, userInfo: nil)
+        let error3 = NSError(domain: "test3", code: 3, userInfo: nil)
 
         var testReason1: NSError?
         var testReason2: NSError?
@@ -409,7 +409,6 @@ class Tests2_2_6: XCTestCase {
             nil,
             {(reason: NSError) -> NSError in
                 testReasons.append(error1)
-
                 promise.then(
                     nil,
                     {(reason: NSError) -> NSError in
