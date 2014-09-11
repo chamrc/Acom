@@ -24,7 +24,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - then(,)
     func testThenWithTwoArguments_resolve_sync() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test1")
 
         var testResult = ""
 
@@ -52,7 +52,7 @@ class PromiseTests: XCTestCase {
     }
 
     func testThenWithTwoArguments_reject_sync() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test2")
 
         var testResult: NSError?
         var promise = Promise(
@@ -79,7 +79,7 @@ class PromiseTests: XCTestCase {
     }
 
     func testThenWithTwoArguments_resolve_async() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test3")
 
         var testResult = ""
 
@@ -109,7 +109,7 @@ class PromiseTests: XCTestCase {
     }
 
     func testThenWithTwoArguments_reject_async() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test4")
         
         var testResult: NSError?
         var promise = Promise(
@@ -138,7 +138,7 @@ class PromiseTests: XCTestCase {
     }
 
     func testThenWithTwoArguments_resolve_sync_chain() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test5")
 
         var testResult = ""
 
@@ -177,7 +177,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - then()
     func testThen_resolve_sync() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test6")
 
         var testResult = ""
 
@@ -201,7 +201,7 @@ class PromiseTests: XCTestCase {
     }
 
     func testThen_resolve_sync_chain() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("then_test7")
 
         var testResult = ""
 
@@ -233,7 +233,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - catch()
     func testCatch_reject_sync() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("catch_test1")
 
         var testResult: NSError?
 
@@ -258,7 +258,7 @@ class PromiseTests: XCTestCase {
     }
 
     func testCatch_reject_sync_chain() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("catch_test2")
 
         var testResult: NSError?
 
@@ -290,7 +290,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - Promise.resolve()
     func testThenWithTwoArguments_static_resolve() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("resolve_test1")
 
         var testResult = ""
 
@@ -314,7 +314,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - Promise.reject()
     func testThenWithTwoArguments_static_reject() {
-        let expectation = expectationWithDescription("Promise Test")
+        let expectation = expectationWithDescription("reject_test1")
 
         var testResult: NSError?
         let error = NSError(domain: "test", code: 1, userInfo: nil)
@@ -335,7 +335,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - Promise.all()
     func testAll_resolve_immediately() {
-        let expectation = expectationWithDescription("test all")
+        let expectation = expectationWithDescription("all_test1")
 
         var testResults:[Any]?
 
@@ -369,7 +369,7 @@ class PromiseTests: XCTestCase {
 
     // MARK: - Promise.race()
     func testRace_resolve_immediately() {
-        let expectation = expectationWithDescription("test race")
+        let expectation = expectationWithDescription("race_test1")
 
         var testResult:Any?
 

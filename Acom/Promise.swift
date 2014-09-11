@@ -24,8 +24,8 @@ public class Promise<T> {
     private var state: State = .Pending
     private var value: (T)?
     private var reason: (NSError)?
-    private var resolveHandler: [(() -> ())] = []
-    private var rejectHandler: [(() -> ())] = []
+    private var resolveHandler: [(handler: () -> (), queue: dispatch_queue_t)] = []
+    private var rejectHandler: [(handler: () -> (), queue: dispatch_queue_t)] = []
 
     // MARK: - Initialize
     init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
@@ -105,15 +105,13 @@ public class Promise<T> {
 
     private func resolveHandle() {
         for handler in resolveHandler {
-            //FIXME
-            dispatch_async(dispatchQueue, { handler() })
+            dispatch_async(handler.queue, { handler.handler() })
         }
     }
 
     private func rejectHandle() {
         for handler in rejectHandler {
-            //FIXME
-            dispatch_async(dispatchQueue, { handler() })
+            dispatch_async(handler.queue, { handler.handler() })
         }
     }
 
@@ -149,22 +147,28 @@ public class Promise<T> {
                 })
             case .Pending:
                 objc_sync_enter(self)
-                self.resolveHandler.append({
-                    if let value = self.value {
-                        returnVal = resolved(value)
-                        resolve(returnVal!)
-                    }
-                })
-                self.rejectHandler.append({
-                    if let reason = self.reason {
-                        returnReason = rejected?(reason)
-                        if let returnReason = returnReason {
-                            reject(returnReason)
-                        } else {
-                            reject(reason)
+                self.resolveHandler.append(
+                    handler: {
+                        if let value = self.value {
+                            returnVal = resolved(value)
+                            resolve(returnVal!)
                         }
-                    }
-                })
+                    },
+                    queue: dispatchQueue
+                )
+                self.rejectHandler.append(
+                    handler: {
+                        if let reason = self.reason {
+                            returnReason = rejected?(reason)
+                            if let returnReason = returnReason {
+                                reject(returnReason)
+                            } else {
+                                reject(reason)
+                            }
+                        }
+                    },
+                    queue: dispatchQueue
+                )
                 objc_sync_exit(self)
             }
         })
@@ -184,12 +188,18 @@ public class Promise<T> {
                         if let returnVal = returnVal {
                             switch returnVal.state {
                             case .Pending:
-                                returnVal.resolveHandler.append({
-                                    resolve(returnVal.value!)
-                                })
-                                returnVal.rejectHandler.append({
-                                    reject(returnVal.reason!)
-                                })
+                                returnVal.resolveHandler.append(
+                                    handler: {
+                                        resolve(returnVal.value!)
+                                    },
+                                    queue: dispatchQueue
+                                )
+                                returnVal.rejectHandler.append(
+                                    handler: {
+                                        reject(returnVal.reason!)
+                                    },
+                                    queue: dispatchQueue
+                                )
                                 break
                             case .Fulfilled:
                                 resolve(returnVal.value!)
@@ -214,33 +224,39 @@ public class Promise<T> {
                 })
             case .Pending:
                 objc_sync_enter(self)
-                self.resolveHandler.append({
-                    if let value = self.value {
-                        returnVal = resolved(value)
-                        if let returnVal = returnVal {
-                            switch returnVal.state {
-                            case .Pending:
-                                break
-                            case .Fulfilled:
-                                resolve(returnVal.value!)
-                                break
-                            case .Rejected:
-                                reject(returnVal.reason!)
-                                break
+                self.resolveHandler.append(
+                    handler: {
+                        if let value = self.value {
+                            returnVal = resolved(value)
+                            if let returnVal = returnVal {
+                                switch returnVal.state {
+                                case .Pending:
+                                    break
+                                case .Fulfilled:
+                                    resolve(returnVal.value!)
+                                    break
+                                case .Rejected:
+                                    reject(returnVal.reason!)
+                                    break
+                                }
                             }
                         }
-                    }
-                })
-                self.rejectHandler.append({
-                    if let reason = self.reason {
-                        returnReason = rejected?(reason)
-                        if let returnReason = returnReason {
-                            reject(returnReason)
-                        } else {
-                            reject(reason)
+                    },
+                    queue: dispatchQueue
+                )
+                self.rejectHandler.append(
+                    handler: {
+                        if let reason = self.reason {
+                            returnReason = rejected?(reason)
+                            if let returnReason = returnReason {
+                                reject(returnReason)
+                            } else {
+                                reject(reason)
+                            }
                         }
-                    }
-                })
+                    },
+                    queue: dispatchQueue
+                )
                 objc_sync_exit(self)
             }
         })
@@ -272,21 +288,27 @@ public class Promise<T> {
                 })
             case .Pending:
                 objc_sync_enter(self)
-                self.resolveHandler.append({
-                    if let value = self.value {
-                        resolve(value)
-                    }
-                })
-                self.rejectHandler.append({
-                    if let reason = self.reason {
-                        returnReason = rejected?(reason)
-                        if let returnReason = returnReason {
-                            reject(returnReason)
-                        } else {
-                            reject(reason)
+                self.resolveHandler.append(
+                    handler: {
+                        if let value = self.value {
+                            resolve(value)
                         }
-                    }
-                })
+                    },
+                    queue: dispatchQueue
+                )
+                self.rejectHandler.append(
+                    handler: {
+                        if let reason = self.reason {
+                            returnReason = rejected?(reason)
+                            if let returnReason = returnReason {
+                                reject(returnReason)
+                            } else {
+                                reject(reason)
+                            }
+                        }
+                    },
+                    queue: dispatchQueue
+                )
                 objc_sync_exit(self)
             }
         })
@@ -307,22 +329,25 @@ public class Promise<T> {
                 })
             case .Pending:
                 objc_sync_enter(self)
-                self.rejectHandler.append({
-                    if let reason = self.reason {
-                        returnReason = rejected(reason)
-                        if let returnReason = returnReason {
-                            reject(returnReason)
-                        } else {
-                            reject(reason)
+                self.rejectHandler.append(
+                    handler: {
+                        if let reason = self.reason {
+                            returnReason = rejected(reason)
+                            if let returnReason = returnReason {
+                                reject(returnReason)
+                            } else {
+                                reject(reason)
+                            }
                         }
-                    }
-                })
+                    },
+                    queue: dispatchQueue
+                )
                 objc_sync_exit(self)
             }
         })
     }
 
-    // MARK: - Pubic Interface
+    //MARK: - Pubic Interface
     func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
     }

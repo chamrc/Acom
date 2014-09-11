@@ -119,7 +119,7 @@ class Tests2_2_1: XCTestCase {
     }
 
     func test2_2_1_2_applied_to_a_promise_fulfilled_and_then_chained_off_of() {
-        let expectation = expectationWithDescription("test2_2_1_2_1")
+        let expectation = expectationWithDescription("test2_2_1_2_2")
 
         var testResult: String?
         var testReason: NSError?
