@@ -29,19 +29,15 @@ class PromiseTests: XCTestCase {
         var testResult = ""
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: "Hello")
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
                 testResult = result
                 expectation.fulfill()
             },
-            {
-                (reason: NSError) -> NSError in
+            {(reason: NSError) -> NSError in
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
@@ -56,20 +52,16 @@ class PromiseTests: XCTestCase {
 
         var testResult: NSError?
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
             },
-            {
-                (reason: NSError) -> NSError in
-                    testResult = reason
-                    expectation.fulfill()
-                    return testResult!
+            {(reason: NSError) -> NSError in
+                testResult = reason
+                expectation.fulfill()
+                return testResult!
             }
         )
 
@@ -84,25 +76,21 @@ class PromiseTests: XCTestCase {
         var testResult = ""
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     resolve(result: "Hello")
                 })
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
                 testResult = result
                 expectation.fulfill()
             },
-            {
-                (reason: NSError) -> NSError in
+            {(reason: NSError) -> NSError in
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
-        
+
         waitForExpectationsWithTimeout(10, handler: {error in
             XCTAssertEqual("Hello", testResult, "")
         })
@@ -113,19 +101,15 @@ class PromiseTests: XCTestCase {
         
         var testResult: NSError?
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
                 })
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
             },
-            {
-                (reason: NSError) -> NSError in
+            {(reason: NSError) -> NSError in
                 testResult = reason
                 expectation.fulfill()
                 return testResult!
@@ -143,29 +127,22 @@ class PromiseTests: XCTestCase {
         var testResult = ""
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: "Hello")
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> String in
+        ).then(
+            {(result: String) -> String in
                 return result + "World"
             },
-            {
-                (reason: NSError) -> NSError in
+            {(reason: NSError) -> NSError in
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
-        )
-        var promise3 = promise2.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
                 testResult = result + "!!"
                 expectation.fulfill()
             },
-            {
-                (reason: NSError) -> NSError in
+            {(reason: NSError) -> NSError in
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
@@ -182,14 +159,11 @@ class PromiseTests: XCTestCase {
         var testResult = ""
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: "Hello")
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
                 testResult = result
                 expectation.fulfill()
             }
@@ -206,21 +180,16 @@ class PromiseTests: XCTestCase {
         var testResult = ""
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 resolve(result: "Hello")
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> String in
+        ).then(
+            {(result: String) -> String in
                 testResult = result + "World"
                 return testResult
             }
-        )
-        var promise3 = promise2.then(
-            {
-                (result: String) -> Void in
+        ).then(
+            {(result: String) -> Void in
                 testResult = result + "!!"
                 expectation.fulfill()
             }
@@ -238,14 +207,11 @@ class PromiseTests: XCTestCase {
         var testResult: NSError?
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
             }
-        )
-        var promise2 = promise.catch(
-            {
-                (reason: NSError) -> NSError in
+        ).catch(
+            {(reason: NSError) -> NSError in
                 testResult = reason
                 expectation.fulfill()
                 return testResult!
@@ -263,20 +229,15 @@ class PromiseTests: XCTestCase {
         var testResult: NSError?
 
         var promise = Promise(
-            {
-                (resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
             }
-        )
-        var promise2 = promise.then(
-            {
-                (result: String) -> String in
+        ).then(
+            {(result: String) -> String in
                 return result + "World"
             }
-        )
-        var promise3 = promise2.catch(
-            {
-                (reason: NSError) -> NSError in
+        ).catch(
+            {(reason: NSError) -> NSError in
                 testResult = reason
                 expectation.fulfill()
                 return testResult!
@@ -294,15 +255,12 @@ class PromiseTests: XCTestCase {
 
         var testResult = ""
 
-        var promise = Promise.resolve("Hello")
-        var promise2 = promise.then(
-            {
-                (result: String) -> Void in
+        var promise = Promise.resolve("Hello").then(
+            {(result: String) -> Void in
                 testResult = result
                 expectation.fulfill()
             },
-            {
-                (reason: NSError) -> NSError in
+            {(reason: NSError) -> NSError in
                 return NSError(domain: "test", code: 1, userInfo: nil)
             }
         )
@@ -318,10 +276,8 @@ class PromiseTests: XCTestCase {
 
         var testResult: NSError?
         let error = NSError(domain: "test", code: 1, userInfo: nil)
-        var promise = Promise<NSError>.reject(error)
-        var promise2 = promise.catch(
-            {
-                (reason: NSError) -> NSError in
+        var promise = Promise<NSError>.reject(error).catch(
+            {(reason: NSError) -> NSError in
                 testResult = reason
                 expectation.fulfill()
                 return testResult!
@@ -343,10 +299,12 @@ class PromiseTests: XCTestCase {
             Promise.resolve("1"),
             Promise.resolve("2"),
             Promise.resolve("3"),
-        ]).then({(result: [Any]) -> Void in
-            testResults = result
-            expectation.fulfill()
-        })
+        ]).then(
+            {(result: [Any]) -> Void in
+                testResults = result
+                expectation.fulfill()
+            }
+        )
 
         waitForExpectationsWithTimeout(10, handler: {error in
             if let result = testResults![0] as? String {
@@ -377,14 +335,16 @@ class PromiseTests: XCTestCase {
             Promise.resolve("1"),
             Promise.resolve("2"),
             Promise.resolve("3"),
-            ]).then({(result: Any) -> Void in
+        ]).then(
+            {(result: Any) -> Void in
                 testResult = result
 
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
                     expectation.fulfill()
                 })
-            })
-
+            }
+        )
+        
         waitForExpectationsWithTimeout(10, handler: {error in
             if let result = testResult as? String {
                 XCTAssertEqual("1", result, "")
@@ -394,4 +354,231 @@ class PromiseTests: XCTestCase {
         })
     }
 
+
+    // MARK: - thenOn(,)
+    func testThenOnWithTwoArguments_resolve_sync() {
+        let expectation = expectationWithDescription("thenon_test1")
+
+        var testResult = ""
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                resolve(result: "Hello")
+            }
+            ).thenOn(
+                {(result: String) -> Void in
+                    testResult = result
+                    expectation.fulfill()
+                },
+                {(reason: NSError) -> NSError in
+                    return NSError(domain: "test", code: 1, userInfo: nil)
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual("Hello", testResult, "")
+        })
+    }
+
+    func testOnThenWithTwoArguments_reject_sync() {
+        let expectation = expectationWithDescription("thenon_test2")
+
+        var testResult: NSError?
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            }
+            ).thenOn(
+                {(result: String) -> Void in
+                },
+                {(reason: NSError) -> NSError in
+                    testResult = reason
+                    expectation.fulfill()
+                    return testResult!
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+        })
+    }
+
+    func testThenOnWithTwoArguments_resolve_async() {
+        let expectation = expectationWithDescription("thenon_test3")
+
+        var testResult = ""
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+                    resolve(result: "Hello")
+                })
+            }
+            ).thenOn(
+                {(result: String) -> Void in
+                    testResult = result
+                    expectation.fulfill()
+                },
+                {(reason: NSError) -> NSError in
+                    return NSError(domain: "test", code: 1, userInfo: nil)
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual("Hello", testResult, "")
+        })
+    }
+
+    func testThenOnWithTwoArguments_reject_async() {
+        let expectation = expectationWithDescription("thenon_test4")
+
+        var testResult: NSError?
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
+                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                })
+            }
+            ).thenOn(
+                {(result: String) -> Void in
+                },
+                {(reason: NSError) -> NSError in
+                    testResult = reason
+                    expectation.fulfill()
+                    return testResult!
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+        })
+    }
+
+    func testThenOnWithTwoArguments_resolve_sync_chain() {
+        let expectation = expectationWithDescription("thenon_test5")
+
+        var testResult = ""
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                resolve(result: "Hello")
+            }
+            ).thenOn(
+                {(result: String) -> String in
+                    return result + "World"
+                },
+                {(reason: NSError) -> NSError in
+                    return NSError(domain: "test", code: 1, userInfo: nil)
+                }
+            ).thenOn(
+                {(result: String) -> Void in
+                    testResult = result + "!!"
+                    expectation.fulfill()
+                },
+                {(reason: NSError) -> NSError in
+                    return NSError(domain: "test", code: 1, userInfo: nil)
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual("HelloWorld!!", testResult, "")
+        })
+    }
+
+    // MARK: - thenOn()
+    func testThenOn_resolve_sync() {
+        let expectation = expectationWithDescription("thenon_test6")
+
+        var testResult = ""
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                resolve(result: "Hello")
+            }
+            ).thenOn(
+                {(result: String) -> Void in
+                    testResult = result
+                    expectation.fulfill()
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual("Hello", testResult, "")
+        })
+    }
+
+    func testThenOn_resolve_sync_chain() {
+        let expectation = expectationWithDescription("thenon_test7")
+
+        var testResult = ""
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                resolve(result: "Hello")
+            }
+            ).thenOn(
+                {(result: String) -> String in
+                    testResult = result + "World"
+                    return testResult
+                }
+            ).thenOn(
+                {(result: String) -> Void in
+                    testResult = result + "!!"
+                    expectation.fulfill()
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual("HelloWorld!!", testResult, "")
+        })
+    }
+
+    // MARK: - catchOn()
+    func testCatchOn_reject_sync() {
+        let expectation = expectationWithDescription("catchon_test1")
+
+        var testResult: NSError?
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            }
+            ).catchOn(
+                {(reason: NSError) -> NSError in
+                    testResult = reason
+                    expectation.fulfill()
+                    return testResult!
+                }
+        )
+
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+        })
+    }
+
+    func testCatchOn_reject_sync_chain() {
+        let expectation = expectationWithDescription("catchon_test2")
+
+        var testResult: NSError?
+
+        var promise = Promise(
+            {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+            }
+            ).thenOn(
+                {(result: String) -> String in
+                    return result + "World"
+                }
+            ).catchOn(
+                {(reason: NSError) -> NSError in
+                    testResult = reason
+                    expectation.fulfill()
+                    return testResult!
+                }
+        )
+        
+        waitForExpectationsWithTimeout(10, handler: {error in
+            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+        })
+    }
 }
