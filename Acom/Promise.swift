@@ -18,8 +18,8 @@ enum State {
 let dispatchQueue = dispatch_queue_create("AcomThread", DISPATCH_QUEUE_SERIAL)
 
 public class Promise<T> {
-    typealias OnResolved = (T) -> Void
-    typealias OnRejected = (NSError?) -> Void
+    public typealias OnResolved = (T) -> Void
+    public typealias OnRejected = (NSError?) -> Void
 
     private var state: State = .Pending
     private var value: (T)?
@@ -28,12 +28,12 @@ public class Promise<T> {
     private var rejectHandler: [(handler: () -> (), queue: dispatch_queue_t)] = []
 
     // MARK: - Initialize
-    init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
+    public init(_ asyncFunc: (resolve: OnResolved, reject: OnRejected) -> Void) {
         asyncFunc(onResolve, onRejected)
     }
 
     // MARK: - Public Class Interface
-    class func resolve(result: T) -> Promise<T> {
+    public class func resolve(result: T) -> Promise<T> {
         return Promise<T>(
             {(resolve: (result: T) -> Void, reject) -> Void in
                 resolve(result: result)
@@ -41,15 +41,15 @@ public class Promise<T> {
         )
     }
 
-    class func reject(reason: NSError) -> Promise<NSError> {
-        return Promise<NSError>(
+    public class func reject(reason: NSError) -> Promise {
+        return Promise(
             {(resolve, reject: (reason: NSError) -> Void) -> Void in
                 reject(reason: reason)
             }
         )
     }
 
-    class func all(promises: [Promise]) -> Promise<[Any]> {
+    public class func all(promises: [Promise]) -> Promise<[Any]> {
         return Promise<[Any]>({ (resolve, reject) -> Void in
             var values = [Any]()
             var remain = promises.count
@@ -70,7 +70,7 @@ public class Promise<T> {
         })
     }
 
-    class func race(promises: [Promise]) -> Promise<Any> {
+    public class func race(promises: [Promise]) -> Promise<Any> {
         return Promise<Any>({ (resolve, reject) -> Void in
             for promise in promises {
                 promise.then({(result: T) -> Void in
@@ -348,52 +348,52 @@ public class Promise<T> {
     }
 
     //MARK: - Pubic Interface
-    func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    public func then<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
     }
 
-    func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    public func then<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
     }
 
-    func then(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
+    public func then(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatchQueue)
     }
 
-    func then<U>(resolved: ((T) -> U)) -> Promise<U> {
+    public func then<U>(resolved: ((T) -> U)) -> Promise<U> {
         return then(resolved, nil)
     }
 
-    func then<U>(resolved: ((T) -> Promise<U>)) -> Promise<U> {
+    public func then<U>(resolved: ((T) -> Promise<U>)) -> Promise<U> {
         return then(resolved, nil)
     }
 
-    func catch(rejected: (NSError) -> NSError) -> Promise<NSError> {
+    public func catch(rejected: (NSError) -> NSError) -> Promise<NSError> {
         return self.catch(rejected, dispatchQueue: dispatchQueue)
     }
 
     //MARK: for main thread
-    func thenOn<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    public func thenOn<U>(resolved: ((T) -> U), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatch_get_main_queue())
     }
 
-    func thenOn<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
+    public func thenOn<U>(resolved: ((T) -> Promise<U>), rejected: ((NSError) -> NSError)?) -> Promise<U> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatch_get_main_queue())
     }
 
-    func thenOn(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
+    public func thenOn(resolved: (T)?, rejected: ((NSError) -> NSError)?) -> Promise<T> {
         return self.then(resolved, rejected: rejected, dispatchQueue: dispatch_get_main_queue())
     }
 
-    func thenOn<U>(resolved: ((T) -> U)) -> Promise<U> {
+    public func thenOn<U>(resolved: ((T) -> U)) -> Promise<U> {
         return thenOn(resolved, nil)
     }
 
-    func thenOn<U>(resolved: ((T) -> Promise<U>)) -> Promise<U> {
+    public func thenOn<U>(resolved: ((T) -> Promise<U>)) -> Promise<U> {
         return thenOn(resolved, nil)
     }
 
-    func catchOn(rejected: (NSError) -> NSError) -> Promise<NSError> {
+    public func catchOn(rejected: (NSError) -> NSError) -> Promise<NSError> {
         return self.catch(rejected, dispatchQueue: dispatch_get_main_queue())
     }
 }
