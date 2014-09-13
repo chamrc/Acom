@@ -20,17 +20,18 @@ _Acom is a Swift Promise library for iOS Based on Promises/A+ Spec and JavaScrip
   - catchOn(...)
 
 _Thenable is not supported_
+
 _'thenOn' and 'catchOn' run on main thread. The others run on Acom Thread._
 
 ## Example
 
 ### chain
 ```
-Promise({(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+Promise(
+  {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
     // do somthing async task
 
     // when async task finished
-    let succeed = true
     if succeed {
         resolve(result: "Hello")
     } else {
@@ -54,13 +55,13 @@ Promise({(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) 
 ```
 
 ### exit then as error
--if need to exit then method as error, use return Promise Object-
+_if need to exit then method as error, use return Promise Object_
 ```
-Promise({(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
+Promise(
+  {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
     // do somthing async task
 
     // when async task finished
-    let succeed = true
     if succeed {
         resolve(result: "Hello")
     } else {
@@ -97,7 +98,7 @@ To use Acom to your iOS applications, follow these 4 easy steps:
 1. Clone the Acom repository
 2. Add Acom.xcodeproj to your test target
 3. Link Acom.framework
-4. import Acom
+4. import Acom when use Promise
 
 ## License
 MIT
