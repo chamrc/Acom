@@ -22,6 +22,8 @@ class PromiseTests: XCTestCase {
         super.tearDown()
     }
 
+    let ERROR = NSError(domain: "test", code: 1, userInfo: nil)
+
     // MARK: - then(,)
     func testThenWithTwoArguments_resolve_sync() {
         let expectation = expectationWithDescription("then_test1")
@@ -38,7 +40,7 @@ class PromiseTests: XCTestCase {
                 expectation.fulfill()
             },
             {(reason: NSError) -> NSError in
-                return NSError(domain: "test", code: 1, userInfo: nil)
+                return self.ERROR
             }
         )
 
@@ -50,23 +52,23 @@ class PromiseTests: XCTestCase {
     func testThenWithTwoArguments_reject_sync() {
         let expectation = expectationWithDescription("then_test2")
 
-        var testResult: NSError?
+        var testReason: NSError?
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                reject(reason: self.ERROR)
             }
         ).then(
             {(result: String) -> Void in
             },
             {(reason: NSError) -> NSError in
-                testResult = reason
+                testReason = reason
                 expectation.fulfill()
-                return testResult!
+                return testReason!
             }
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testReason!, "")
         })
     }
 
@@ -87,7 +89,7 @@ class PromiseTests: XCTestCase {
                 expectation.fulfill()
             },
             {(reason: NSError) -> NSError in
-                return NSError(domain: "test", code: 1, userInfo: nil)
+                return self.ERROR
             }
         )
 
@@ -103,7 +105,7 @@ class PromiseTests: XCTestCase {
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
-                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                    reject(reason: self.ERROR)
                 })
             }
         ).then(
@@ -117,7 +119,7 @@ class PromiseTests: XCTestCase {
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 
@@ -135,7 +137,7 @@ class PromiseTests: XCTestCase {
                 return result + "World"
             },
             {(reason: NSError) -> NSError in
-                return NSError(domain: "test", code: 1, userInfo: nil)
+                return self.ERROR
             }
         ).then(
             {(result: String) -> Void in
@@ -143,7 +145,7 @@ class PromiseTests: XCTestCase {
                 expectation.fulfill()
             },
             {(reason: NSError) -> NSError in
-                return NSError(domain: "test", code: 1, userInfo: nil)
+                return self.ERROR
             }
         )
 
@@ -208,7 +210,7 @@ class PromiseTests: XCTestCase {
 
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                reject(reason: self.ERROR)
             }
         ).catch(
             {(reason: NSError) -> NSError in
@@ -219,7 +221,7 @@ class PromiseTests: XCTestCase {
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 
@@ -230,7 +232,7 @@ class PromiseTests: XCTestCase {
 
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                reject(reason: self.ERROR)
             }
         ).then(
             {(result: String) -> String in
@@ -245,7 +247,7 @@ class PromiseTests: XCTestCase {
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 
@@ -261,7 +263,7 @@ class PromiseTests: XCTestCase {
                 expectation.fulfill()
             },
             {(reason: NSError) -> NSError in
-                return NSError(domain: "test", code: 1, userInfo: nil)
+                return self.ERROR
             }
         )
 
@@ -285,7 +287,7 @@ class PromiseTests: XCTestCase {
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 
@@ -371,7 +373,7 @@ class PromiseTests: XCTestCase {
                     expectation.fulfill()
                 },
                 {(reason: NSError) -> NSError in
-                    return NSError(domain: "test", code: 1, userInfo: nil)
+                    return self.ERROR
                 }
         )
 
@@ -420,7 +422,7 @@ class PromiseTests: XCTestCase {
                     expectation.fulfill()
                 },
                 {(reason: NSError) -> NSError in
-                    return NSError(domain: "test", code: 1, userInfo: nil)
+                    return self.ERROR
                 }
         )
 
@@ -436,7 +438,7 @@ class PromiseTests: XCTestCase {
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
                 dispatch_after(dispatch_time(DISPATCH_TIME_NOW, Int64(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), {
-                    reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                    reject(reason: self.ERROR)
                 })
             }
             ).thenOn(
@@ -450,7 +452,7 @@ class PromiseTests: XCTestCase {
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 
@@ -468,7 +470,7 @@ class PromiseTests: XCTestCase {
                     return result + "World"
                 },
                 {(reason: NSError) -> NSError in
-                    return NSError(domain: "test", code: 1, userInfo: nil)
+                    return self.ERROR
                 }
             ).thenOn(
                 {(result: String) -> Void in
@@ -476,7 +478,7 @@ class PromiseTests: XCTestCase {
                     expectation.fulfill()
                 },
                 {(reason: NSError) -> NSError in
-                    return NSError(domain: "test", code: 1, userInfo: nil)
+                    return self.ERROR
                 }
         )
 
@@ -541,7 +543,7 @@ class PromiseTests: XCTestCase {
 
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                reject(reason: self.ERROR)
             }
             ).catchOn(
                 {(reason: NSError) -> NSError in
@@ -552,7 +554,7 @@ class PromiseTests: XCTestCase {
         )
 
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 
@@ -563,7 +565,7 @@ class PromiseTests: XCTestCase {
 
         var promise = Promise(
             {(resolve: (result: String) -> Void, reject: (reason: NSError) -> Void) -> Void in
-                reject(reason: NSError(domain: "test", code: 1, userInfo: nil))
+                reject(reason: self.ERROR)
             }
             ).thenOn(
                 {(result: String) -> String in
@@ -578,7 +580,7 @@ class PromiseTests: XCTestCase {
         )
         
         waitForExpectationsWithTimeout(10, handler: {error in
-            XCTAssertEqual(NSError(domain: "test", code: 1, userInfo: nil), testResult!, "")
+            XCTAssertEqual(self.ERROR, testResult!, "")
         })
     }
 }
