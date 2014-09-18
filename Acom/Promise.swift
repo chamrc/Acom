@@ -231,6 +231,16 @@ public class Promise<T> {
                             if let returnVal = returnVal {
                                 switch returnVal.state {
                                 case .Pending:
+                                    returnVal.then(
+                                        { U -> Void in
+                                            resolve(returnVal.value!)
+                                        },
+                                        rejected: { NSError -> NSError in
+                                            reject(returnVal.reason!)
+                                            return returnVal.reason!
+                                        },
+                                        dispatchQueue: dispatchQueue
+                                    )
                                     break
                                 case .Fulfilled:
                                     resolve(returnVal.value!)
